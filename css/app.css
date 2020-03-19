@@ -1,0 +1,117 @@
+
+.dropZone {
+	border: 2px dashed #bbb;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	padding: 5px;
+	text-align: center;
+	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
+	font: 20pt;
+	color: #888;
+	position: absolute;
+	width: 300px;
+	z-index: 30000;
+	cursor: pointer;
+
+}
+
+
+.footer {
+	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-weight:40;
+	font-size: 10pt;
+	text-decoration: none;
+	text-align: center;
+	border: none;
+	outline: none;
+	color: #404;
+	width: 100%;
+}
+
+a {
+	text-decoration: none;
+	border: none;
+	outline: none;
+	-webkit-tap-highlight-color: white;
+}
+
+
+
+
+.sectionLabel {
+	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
+ 	font-size: 9pt;
+	color: #888;
+	margin-bottom: 5px;
+	width: 100%;
+  cursor:pointer;
+}
+
+
+.section {
+	overflow:hidden;
+	width: 100%;
+}
+
+.space {
+	margin: 3px;
+}
+
+
+.buttonBase {
+	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
+	font-size: 10pt;
+	margin: 1px;
+	padding: 1px 4px 1px 4px;
+	color: white;
+	background-color: #ccc;
+	text-align: center;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	line-height: 100 px;
+	white-space:pre-wrap;
+	display:inline-block;
+	cursor: pointer;
+
+}
+
+.button {
+	background-color: #ccc;
+}
+
+.buttonSpecial {
+	background-color: #44f;
+}
+
+.buttonSelected {
+	background-color: #080;
+}
+
+#chart {
+	margin-left: 60px;
+	margin-right: 60px;
+	height: 70%;
+}
+
+
+.rightArrow {
+	margin-right: 5px;
+	width: 12px;
+	height: 12px;
+	background: url("../images/right-arrow.png") center no-repeat;
+  background-size: 10px;
+	display: block;
+	float: left;
+}
+
+.downArrow {
+	margin-right: 5px;
+	width: 12px;
+	height: 12px;
+	background: url("../images/down-arrow.png") center no-repeat;
+  background-size: 12px;
+	display: block;
+	float: left;
+}
