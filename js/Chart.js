@@ -33,7 +33,7 @@ class Chart {
 		var countRatioToTitle = {
 			"absolute":		"",
 			"per1MPop":		" per 1M Population",
-			"perBed":			" per Hospital Bed"
+			"perBed":			" as % of Hospital Beds"
 		}
 		var titleName = dateSetTypeToTitle[dataSet.Type];
 
@@ -54,7 +54,8 @@ class Chart {
 			axisY: {
 				includeZero: true,
 				logarithmic: isLogarithmic,
-				labelFontSize: 11
+				labelFontSize: 11,
+				valueFormatString: chartParameters.CountRatio == "perBed" ? "0.##%" : "#,###,###"
 			},
 			axisX: {
 				labelFontSize: 11,
@@ -83,7 +84,7 @@ class Chart {
 		var countRatio = chartParameters.CountRatio;
 		var alignDayZero = chartParameters.AlignDayZero;
 		var isLogarithmic = chartParameters.Logarithmic;
-		var formatString = "#,###,###"
+		var formatString = "#,###,###";
 		var dataPts = [];
 
 		var prevCount = 0;
