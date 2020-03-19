@@ -32,8 +32,8 @@ class Chart {
 
 		var countRatioToTitle = {
 			"absolute":		"",
-			"per1MPop":		"per 1M gPopulationLookup",
-			"perBed":			"per Hospital Bed"
+			"per1MPop":		" per 1M gPopulationLookup",
+			"perBed":			" per Hospital Bed"
 		}
 		var titleName = dateSetTypeToTitle[dataSet.Type];
 
