@@ -254,7 +254,7 @@ class App {
 			this.toggleButtonSet(allowedTypes, ratioType)
 			if (ratioType != "absolute") {
 				this.setDelta(false, false);
-				this.setChartType("line", false);
+				this.setChartType( this.defaultString("chart", "line"), false);
 			}
 			this.drawChart(doDrawChart);
 		}
@@ -269,7 +269,7 @@ class App {
 			this.drawChart(doDrawChart);
 
 			if (chartType != "line") {
-				this.setCountRatio("absolute", false);
+				this.setCountRatio(this.defaultString("ratio", "absolute"), false);
 			}
 		}
 	}
@@ -280,8 +280,8 @@ class App {
 			this.Delta = isDelta;
 			this.toggleButtonPair("delta", "cumulative", isDelta);
 			if (isDelta) {
-				this.setCountRatio("absolute", false);
-				this.setChartType("stackedColumn", false);
+				this.setCountRatio(this.defaultString("ratio", "absolute"), false);
+				this.setChartType( this.defaultString("chart", "stackedColumn"), false);
 			}
 			this.drawChart(doDrawChart);
 		}
