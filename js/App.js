@@ -475,7 +475,7 @@ class App {
 		this.setAlignDayZero(this.defaultBool("align0", false), false);
 		this.setCountryLabel(this.defaultBool("label", true), false);
 
-		this.setCountRatio(this.defaultString("ratioCount", "absolute"), false);
+		this.setCountRatio(this.defaultString("ratio", "absolute"), false);
 		this.setDataSetType(this.defaultString("type", "confirmed"), false);
 		this.setChartType( this.defaultString("chart", "line"), false);
 	}
