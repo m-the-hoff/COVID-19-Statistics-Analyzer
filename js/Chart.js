@@ -119,17 +119,18 @@ class Chart {
 			if ( isLogarithmic && count == 0)
 				count = 1;	//count of 0 does not work for logarithm scale
 
-
-			if (count >= 100)
-				formatString = "#,###,###";
-			else if (count >= 1 )
-				formatString = "#.#";
-			else if ( count >= 0.01 )
-				formatString = "0.###";
-			else if ( !count )
-				formatString = "#";
-			else
-				formatString = "0.######";
+			if ( countRatio != "perBed") {
+				if (count >= 100)
+					formatString = "#,###,###";
+				else if (count >= 1 )
+					formatString = "#.#";
+				else if ( count >= 0.01 )
+					formatString = "0.###";
+				else if ( !count )
+					formatString = "#";
+				else
+					formatString = "0.######";
+			}
 
 			datum = {
 				"yValueFormatString" : formatString,
