@@ -82,7 +82,7 @@ a {
 	margin: 1px;
 	padding: 1px 4px 1px 4px;
 	color: white;
-	background-color: #ccc;
+	background-color: #999;
 	text-align: center;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -91,11 +91,12 @@ a {
 	white-space:pre-wrap;
 	display:inline-block;
 	cursor: pointer;
+	text-shadow: 1px 1px #888;
 }
 
 
 .button {
-	background-color: #ccc;
+	background-color: #999;
 }
 
 .buttonChart {
@@ -108,7 +109,8 @@ a {
 
 
 .buttonSelected {
-	background-color: #080;
+	background-color: #1c1;
+	box-shadow: 1px 1px #888888;
 }
 
 
