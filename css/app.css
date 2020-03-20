@@ -1,3 +1,7 @@
+body {
+	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
 
 .dropZone {
 	border: 2px dashed #bbb;
@@ -29,6 +33,7 @@
 	width: 100%;
 }
 
+
 a {
 	text-decoration: none;
 	border: none;
@@ -37,15 +42,13 @@ a {
 }
 
 
-
-
 .sectionLabel {
 	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
  	font-size: 9pt;
 	color: #888;
 	margin-bottom: 5px;
 	width: 100%;
-  cursor:pointer;
+	cursor:pointer;
 }
 
 
@@ -54,8 +57,22 @@ a {
 	width: 100%;
 }
 
+
 .space {
 	margin: 3px;
+}
+
+
+.shareMessage {
+	padding: 1em;
+	font-size: 10pt;
+	color: #666;
+    position: absolute;
+	display: block;
+	left: 0;
+	top: 470px;
+    transform-origin: 25% 100%;
+	transform: rotate(-90deg);
 }
 
 
@@ -74,20 +91,26 @@ a {
 	white-space:pre-wrap;
 	display:inline-block;
 	cursor: pointer;
-
 }
+
 
 .button {
 	background-color: #ccc;
+}
+
+.buttonChart {
+	height: 25px;
 }
 
 .buttonSpecial {
 	background-color: #44f;
 }
 
+
 .buttonSelected {
 	background-color: #080;
 }
+
 
 #chart {
 	margin-left: 60px;
@@ -101,17 +124,18 @@ a {
 	width: 12px;
 	height: 12px;
 	background: url("../images/right-arrow.png") center no-repeat;
-  background-size: 10px;
+	background-size: 10px;
 	display: block;
 	float: left;
 }
+
 
 .downArrow {
 	margin-right: 5px;
 	width: 12px;
 	height: 12px;
 	background: url("../images/down-arrow.png") center no-repeat;
-  background-size: 12px;
+	background-size: 12px;
 	display: block;
 	float: left;
 }

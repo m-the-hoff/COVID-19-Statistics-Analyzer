@@ -252,10 +252,6 @@ class App {
 		if (allowedTypes.includes(ratioType) && ratioType != this.CountRatio) {
 			this.CountRatio = ratioType;
 			this.toggleButtonSet(allowedTypes, ratioType)
-			if (ratioType != "absolute") {
-				this.setDelta(false, false);
-				this.setChartType( this.defaultString("chart", "line"), false);
-			}
 			this.drawChart(doDrawChart);
 		}
 	}
@@ -394,14 +390,14 @@ class App {
 
 
 	createSpecialButton( containerName, label, clickFunc ) {
-		var countryContainerNode = document.getElementById(containerName);
+		var containerNode = document.getElementById(containerName);
 		var specialEle = document.createElement("span");
 
 		specialEle.className = this.SpecialButtonClass;
 		specialEle.id = label;
 		specialEle.onclick = clickFunc;
 		specialEle.innerHTML = label;
-		countryContainerNode.appendChild(specialEle);
+		containerNode.appendChild(specialEle);
 	}
 
 

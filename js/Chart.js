@@ -84,7 +84,7 @@ class Chart {
 		var countRatio = chartParameters.CountRatio;
 		var alignDayZero = chartParameters.AlignDayZero;
 		var isLogarithmic = chartParameters.Logarithmic;
-		var formatString = "#,###,###";
+		var formatString;
 		var dataPts = [];
 
 		var prevCount = 0;
@@ -104,35 +104,39 @@ class Chart {
 			var shortName = (loc.RegionType == "state" ? loc.Province_State : loc.LocationName);
 
 			if (delta) {
-				var deltaCount = count - prevCount;
-				if ( isLogarithmic && deltaCount == 0)
-					deltaCount = 1;	 //compensate for bug in logarithmic chart
-
-				datum = {
-					"label": labelTxt,
-					"x": x,
-					"y": deltaCount
-				};
-				prevCount = count;
-			} else {
-				if (countRatio == "per1MPop") {
-					count = 1000000 * parseFloat(count) / parseFloat(loc.Population );
-					formatString = "#.####";
-				} else if (countRatio == "perBed") {
-					count = parseFloat(count) / parseFloat(loc.Beds);
-					formatString = "0.##%";
-				}
-
-				if ( isLogarithmic && count == 0)
-					count = 1;	//compensate for bug in logarithmic chart
-
-				datum = {
-					"yValueFormatString" : formatString,
-					"label": labelTxt,
-					"x": x,
-					"y": count
-				};
+				count -= prevCount;
+				prevCount = loc[date];
 			}
+
+			if (countRatio == "per1MPop") {
+				count = 1000000 * parseFloat(count) / parseFloat(loc.Population );
+
+			} else if (countRatio == "perBed") {
+				count = parseFloat(count) / parseFloat(loc.Beds);
+				formatString = "0.##%";
+			}
+
+			if ( isLogarithmic && count == 0)
+				count = 1;	//count of 0 does not work for logarithm scale
+
+
+			if (count >= 100)
+				formatString = "#,###,###";
+			else if (count >= 1 )
+				formatString = "#.#";
+			else if ( count >= 0.01 )
+				formatString = "0.###";
+			else if ( !count )
+				formatString = "#";
+			else
+				formatString = "0.######";
+
+			datum = {
+				"yValueFormatString" : formatString,
+				"label": labelTxt,
+				"x": x,
+				"y": count
+			};
 
 			if (chartParameters.ShowCountryLabel && dk == dateKeys.length - 1) {
 				datum.indexLabel = shortName;

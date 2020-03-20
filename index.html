@@ -3,17 +3,17 @@
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=UA-160297983-1"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
 
-  gtag('config', 'UA-160297983-1');
+	gtag('config', 'UA-160297983-1');
 </script>
 
-  <title>Covid-19 Statistics Analyzer</title>
-  <meta name="description" content="View and analyze covid-19 statistics.">
-  <meta name="keywords" content="covid-19,coronavirus,outbreak,epidemic,pandemic"/>
-  <meta name="author" content="Michael T Hoffman">
+	<title>Covid-19 Statistics Analyzer</title>
+	<meta name="description" content="View and analyze covid-19 statistics.">
+	<meta name="keywords" content="covid-19,coronavirus,outbreak,epidemic,pandemic"/>
+	<meta name="author" content="Michael T Hoffman">
 
 <link rel="stylesheet" href="css/app.css">
 
@@ -28,60 +28,62 @@
 
 <script>
 
-    var gApp = null;
+	var gApp = null;
 
-    function setup() {
-        gApp = new App();
-    }
+	function setup() {
+		gApp = new App();
+	}
 
 
 </script>
 </head>
 <body onload="setup()">
-    <div id="dropZone"></div>
-    <div id="chart"></div>
-    <hr/>
+	<div id="dropZone"></div>
+	<div id="chart"></div>
+	<hr/>
 	<div class="sectionLabel" onclick="gApp.toggleSection('chartOptions');"><div id="chartOptionsArrow" class="downArrow"></div>Choose chart options</div>
-    <div class="section" id="chartOptions">
-        <span class="buttonBase button" id="linear" onclick="gApp.setLogarithmic(false);">Linear</span>
-        <span class="buttonBase button" id="logarithmic" onclick="gApp.setLogarithmic(true);">Logarithmic</span>
-        <span class="space">&nbsp;</span>
-        <span class="buttonBase button" id="line" onclick="gApp.setChartType('line');">Line</span>
-        <span class="buttonBase button" id="stackedColumn" onclick="gApp.setChartType('stackedColumn');">Bar</span>
-        <span class="buttonBase button" id="stackedArea" onclick="gApp.setChartType('stackedArea');">Stacked</span>
-        <span class="space">&nbsp;</span>
-        <span class="buttonBase button" id="cumulative" onclick="gApp.setDelta(false);">Cumulative</span>
-        <span class="buttonBase button" id="delta" onclick="gApp.setDelta(true);">Daily Delta</span>
-        <span class="space">&nbsp;</span>
-        <span class="buttonBase button" id="absolute" onclick="gApp.setCountRatio('absolute');">Count</span>
-        <span class="buttonBase button" id="per1MPop" onclick="gApp.setCountRatio('per1MPop');">Count/1M Pop</span>
-        <span class="buttonBase button" id="perBed" onclick="gApp.setCountRatio('perBed');">Count/Bed</span>
-        <span class="space">&nbsp;</span>
-        <span class="buttonBase button" id="absoluteDates" onclick="gApp.setAlignDayZero(false);">By Date</span>
-        <span class="buttonBase button" id="alignDayZero" onclick="gApp.setAlignDayZero(true);">Align Day 0's</span>
-        <span class="space">&nbsp;</span>
-        <span class="buttonBase button" id="confirmed" onclick="gApp.setDataSetType('confirmed');">Confirmed</span>
-        <span class="buttonBase button" id="deaths" onclick="gApp.setDataSetType('deaths');">Deaths</span>
-        <span class="buttonBase button" id="recovered" onclick="gApp.setDataSetType('recovered');">Recovered</span>
-        <span class="space">&nbsp;</span>
-        <span class="buttonBase button" id="countryLabel" onclick="gApp.toggleCountryLabel();">Chart Label</span>
-    </div>
-    <hr/>
+	<div class="section" id="chartOptions">
+		<span class="buttonBase button" id="linear" onclick="gApp.setLogarithmic(false);">Linear</span>
+		<span class="buttonBase button" id="logarithmic" onclick="gApp.setLogarithmic(true);">Log10</span>
+		<span class="space">&nbsp;</span>
+		<span class="buttonBase button" id="line" onclick="gApp.setChartType('line');">Line</span>
+		<span class="buttonBase button" id="stackedColumn" onclick="gApp.setChartType('stackedColumn');">Bar</span>
+		<span class="buttonBase button" id="stackedArea" onclick="gApp.setChartType('stackedArea');">Stacked</span>
+		<span class="space">&nbsp;</span>
+		<span class="buttonBase button" id="cumulative" onclick="gApp.setDelta(false);">Cumulative</span>
+		<span class="buttonBase button" id="delta" onclick="gApp.setDelta(true);">Daily &#x394;</span>
+		<span class="space">&nbsp;</span>
+		<span class="buttonBase button" id="absolute" onclick="gApp.setCountRatio('absolute');">Count</span>
+		<span class="buttonBase button" id="per1MPop" onclick="gApp.setCountRatio('per1MPop');">per 1M Pop</span>
+		<span class="buttonBase button" id="perBed" onclick="gApp.setCountRatio('perBed');">per Bed</span>
+		<span class="space">&nbsp;</span>
+		<span class="buttonBase button" id="absoluteDates" onclick="gApp.setAlignDayZero(false);">By Date</span>
+		<span class="buttonBase button" id="alignDayZero" onclick="gApp.setAlignDayZero(true);">Align Day 0's</span>
+		<span class="space">&nbsp;</span>
+		<span class="buttonBase button" id="confirmed" onclick="gApp.setDataSetType('confirmed');">Confirmed</span>
+		<span class="buttonBase button" id="deaths" onclick="gApp.setDataSetType('deaths');">Deaths</span>
+		<span class="buttonBase button" id="recovered" onclick="gApp.setDataSetType('recovered');">Recovered</span>
+		<span class="space">&nbsp;</span>
+		<span class="buttonBase button" id="countryLabel" onclick="gApp.toggleCountryLabel();">Chart Label</span>
+	</div>
+	<hr/>
 	<div class="sectionLabel" onclick="gApp.toggleSection('countryNames');"><div id="countryNamesArrow" class="downArrow"></div>Choose any combination of countries</div>
-    <div class="section" id="countryNames">
-    </div>
-    <hr/>
+	<div class="section" id="countryNames">
+	</div>
+	<hr/>
 	<div class="sectionLabel" onclick="gApp.toggleSection('stateNames');"><div id="stateNamesArrow" class="downArrow"></div>Choose any combination of US states and regions</div>
-    <div class="section" id="stateNames">
-    </div>
-    <hr/>
-    <span class="footer">
-        site by Michael Hoffman&nbsp;&nbsp;•&nbsp;&nbsp;
-        follow me on <a href="http://linkedin.com/in/mthoffman"&nbsp;&nbsp;•&nbsp;&nbsp target="_blank">LinkedIn</a>&nbsp;&nbsp;•&nbsp;&nbsp;
-        thank you <a href="http://canvasjs.com" target="_blank">CanvasJS</a> for free non-commercial use&nbsp;&nbsp;•&nbsp;&nbsp;
+	<div class="section" id="stateNames">
+	</div>
+	<hr/>
+	<span class="footer">
+		site by Michael Hoffman&nbsp;&nbsp;•&nbsp;&nbsp;
+		follow me on <a href="http://linkedin.com/in/mthoffman"&nbsp;&nbsp;•&nbsp;&nbsp target="_blank">LinkedIn</a>&nbsp;&nbsp;•&nbsp;&nbsp;
+		thank you <a href="http://canvasjs.com" target="_blank">CanvasJS</a> for free non-commercial chart use&nbsp;&nbsp;•&nbsp;&nbsp;
 		<a href="https://github.com/CSSEGISandData/COVID-19" target="_blank">data from Johns Hopkins CSSE</a>
-        </span>
-    <script src="js/canvasjs.min.js"></script>
+	 </span>
+	<div class="shareMessage">Share your personal chart</div>
+
+	<script src="js/canvasjs.min.js"></script>
 
 </body>
 </html>
