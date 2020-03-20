@@ -39,9 +39,9 @@ class App {
 
 		this.FirstCountry				= true;	 // first time a country is selected, "Global" is deselected
 		this.DropZoneAdded			= false;
-		this.RegionButtonClass					= "buttonBase button";
+		this.ButtonDeselectedClass					= "buttonBase button";
 		this.RegionButtonSelectedClass	= "buttonBase buttonSelected";
-		this.SpecialButtonClass					= "buttonBase buttonSpecial";
+		this.SpecialButtonSelectedClass					= "buttonBase buttonSpecial";
 
 		this.SectionAnimations = {};		// place to manage section animations
 
@@ -157,8 +157,8 @@ class App {
 		var locNamesToShow = this.getAllShowingLocationNames();
 		this.CurrentDataSet = dataSet;
 		this.setLocationsToShow( locNamesToShow );
-		this.addCountryNameButtons();
-		this.addStateNameButtons();
+		this.sortBy("Country", "Count");
+		this.sortBy("State", "Count");
 		this.drawChart();
 	}
 
@@ -271,6 +271,30 @@ class App {
 	}
 
 
+	sortBy( category, sortField ) {
+		var allowedFields = ["Count", "Name"];
+		if (allowedFields.includes(sortField) && this.CurrentDataSet ) {
+
+			this.CurrentDataSet.sortBy(sortField);
+
+			switch( category ) {
+				case "Country":	this.addCountryNameButtons();	break;
+				case "State": 	this.addStateNameButtons();		break;
+			}
+
+			// disambiguate element IDs
+			var fullFields = [];
+			for( var f = 0; f < allowedFields.length; f++ ) {
+				var fullField = "sort" + category + allowedFields[f];
+				fullFields.push( fullField );
+				if ( sortField === allowedFields[f] )  sortField = fullField;
+			}
+
+			this.toggleButtonSet(fullFields, sortField)
+		}
+	}
+
+
 	setDelta(isDelta, doDrawChart = true) {
 		if (isDelta != this.Delta) {
 			this.Delta = isDelta;
@@ -294,8 +318,8 @@ class App {
 
 
 	toggleButtonPair(trueNodeId, falseNodeId, state) {
-		this.setButtonState(trueNodeId, state);
-		this.setButtonState(falseNodeId, !state);
+		this.setButtonState(trueNodeId, state, this.SpecialButtonSelectedClass);
+		this.setButtonState(falseNodeId, !state, this.SpecialButtonSelectedClass);
 
 	}
 
@@ -303,14 +327,14 @@ class App {
 	toggleButtonSet(nodeIdList, curState) {
 		for (var i = 0; i < nodeIdList.length; i++) {
 			var node = document.getElementById(nodeIdList[i]);
-			node.className = (node.id == curState ? this.RegionButtonSelectedClass : this.RegionButtonClass);
+			node.className = (node.id == curState ? this.SpecialButtonSelectedClass : this.ButtonDeselectedClass);
 		}
 	}
 
 
-	setButtonState(nodeId, state) {
+	setButtonState(nodeId, state, selectedClass = this.RegionButtonSelectedClass) {
 		var node = document.getElementById(nodeId);
-		node.className = (state ? this.RegionButtonSelectedClass : this.RegionButtonClass);
+		node.className = (state ? selectedClass : this.ButtonDeselectedClass);
 	}
 
 
@@ -393,7 +417,7 @@ class App {
 		var containerNode = document.getElementById(containerName);
 		var specialEle = document.createElement("span");
 
-		specialEle.className = this.SpecialButtonClass;
+		specialEle.className = this.SpecialButtonSelectedClass;
 		specialEle.id = label;
 		specialEle.onclick = clickFunc;
 		specialEle.innerHTML = label;
@@ -426,7 +450,7 @@ class App {
 
 		}
 
-		countryEle.className = loc.Showing ? this.RegionButtonSelectedClass : this.RegionButtonClass;
+		countryEle.className = loc.Showing ? this.RegionButtonSelectedClass : this.ButtonDeselectedClass;
 		countryEle.id = locName;
 		countryEle.onclick = clickFunc;
 		countryEle.innerHTML = label;

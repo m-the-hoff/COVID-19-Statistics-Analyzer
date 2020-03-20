@@ -41,7 +41,7 @@
 	<div id="dropZone"></div>
 	<div id="chart"></div>
 	<hr/>
-	<div class="sectionLabel" onclick="gApp.toggleSection('chartOptions');"><div id="chartOptionsArrow" class="downArrow"></div>Choose chart options</div>
+	<div class="sectionLabel" ><span onclick="gApp.toggleSection('chartOptions');"><div id="chartOptionsArrow" class="downArrow"></div>Choose chart options.</span></div>
 	<div class="section" id="chartOptions">
 		<span class="buttonBase button" id="linear" onclick="gApp.setLogarithmic(false);">Linear</span>
 		<span class="buttonBase button" id="logarithmic" onclick="gApp.setLogarithmic(true);">Log10</span>
@@ -67,13 +67,16 @@
 		<span class="buttonBase button" id="countryLabel" onclick="gApp.toggleCountryLabel();">Chart Label</span>
 	</div>
 	<hr/>
-	<div class="sectionLabel" onclick="gApp.toggleSection('countryNames');"><div id="countryNamesArrow" class="downArrow"></div>Choose any combination of countries</div>
-	<div class="section" id="countryNames">
-	</div>
+	<div class="sectionLabel"><span onclick="gApp.toggleSection('countryNames');"><div id="countryNamesArrow" class="downArrow"></div>Choose any combination of countries.</span>&nbsp;&nbsp;&nbsp;Sort by:
+		<span class="buttonBase buttonSpecial" id="sortCountryCount" onclick="gApp.sortBy('Country','Count');">Count</span>
+		<span class="buttonBase" id="sortCountryName" onclick="gApp.sortBy('Country','Name');">Name</span></div>
+		<div class="section" id="countryNames"></div>
 	<hr/>
-	<div class="sectionLabel" onclick="gApp.toggleSection('stateNames');"><div id="stateNamesArrow" class="downArrow"></div>Choose any combination of US states and regions</div>
-	<div class="section" id="stateNames">
-	</div>
+	<div class="sectionLabel"><span onclick="gApp.toggleSection('stateNames');"><div id="stateNamesArrow" class="downArrow"></div>Choose any combination of US states and regions.</span>&nbsp;&nbsp;&nbsp;Sort by:
+		<span class="buttonBase buttonSpecial" id="sortStateCount" onclick="gApp.sortBy('State','Count');">Count</span>
+		<span class="buttonBase" id="sortStateName" onclick="gApp.sortBy('State','Name');">Name</span></div>
+		<div class="section" id="stateNames"></div>
+
 	<hr/>
 	<span class="footer">
 		site by Michael Hoffman&nbsp;&nbsp;•&nbsp;&nbsp;

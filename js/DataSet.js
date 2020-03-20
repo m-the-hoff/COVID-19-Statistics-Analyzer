@@ -48,7 +48,7 @@ class DataSet {
 					if (type.indexOf("text") !== 1) {
 						self.extractAllData(request.responseText, defaultParams);
 						self.addGlobalAggregate();
-						self.sortByCount();
+						self.sortBy("Count");
 						doneFunc(self);
 					}
 				} else {
@@ -68,7 +68,7 @@ class DataSet {
 
 			self.extractAllData(text, defaultParams);
 			self.addGlobalAggregate();
-			self.sortByCount();
+			self.sortBy("Count");
 			doneFunc( self );
 		};
 
@@ -76,14 +76,41 @@ class DataSet {
 	}
 
 
-	sortByCount() {
-		var sortKey = this.MostRecentKey;
-		this.Locations = this.Locations.sort(function(a, b) {
+	sortBy( field ) {
+		var sortKey;
+		var ascending = true;
+		var compareFunc;
+
+		var valueCompareFunc = function(a, b) {
 			var countA = a[sortKey];
 			var countB = b[sortKey];
 
-			return countB - countA;
-		});
+			if ( ascending ) {
+				return countA - countB;
+			} else {
+				return countB - countA;
+			}
+		};
+
+		var strCompareFunc = function(a, b) {
+			var strA = a[sortKey];
+			var strB = b[sortKey];
+
+			return strA.localeCompare(strB);
+		}
+
+		switch( field ) {
+			case "Count":	sortKey = this.MostRecentKey;
+										ascending=false;
+										compareFunc = valueCompareFunc;
+										break;	// key to count for most recent date
+
+			case "Name":	sortKey = "LocationName";
+										compareFunc = strCompareFunc
+										break;
+		}
+
+		this.Locations = this.Locations.sort(compareFunc);
 	}
 
 
