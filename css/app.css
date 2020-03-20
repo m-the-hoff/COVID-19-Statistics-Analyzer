@@ -70,8 +70,8 @@ a {
     position: absolute;
 	display: block;
 	left: 0;
-	top: 470px;
-    transform-origin: 25% 100%;
+	top: 150px;
+    transform-origin: 45% 100%;
 	transform: rotate(-90deg);
 }
 
