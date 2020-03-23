@@ -46,7 +46,7 @@ class DataSet {
 				if (request.status === 200) {
 					var type = request.getResponseHeader('Content-Type');
 					if (type.indexOf("text") !== 1) {
-						self.processCSVData(text);
+						self.processCSVData(request.responseText);
 						doneFunc(self);
 					}
 				} else {
