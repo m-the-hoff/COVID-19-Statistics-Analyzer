@@ -184,7 +184,7 @@ class DataSet {
 					this.addAndResolveSplitEntries(locationInfo);   // was needed when dataset was messier
 
 					if (locationInfo.RegionType == "state") {
-						this.LocationByName[locationInfo.Province_State] = locationInfo;
+						this.LocationByName[locationInfo.Abbreviation] = locationInfo;
 					}
 				}
 			}
