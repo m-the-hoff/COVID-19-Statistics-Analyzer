@@ -604,6 +604,10 @@ class App {
 		var url = window.location.origin + window.location.pathname + "?" + paramString;
 
 		window.history.replaceState( null, "", url );
+
+		var metaNode = document.querySelector('meta[property="og:url"]');
+		metaNode.setAttribute("content", url);
+
 	}
 
 
