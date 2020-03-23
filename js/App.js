@@ -56,9 +56,9 @@ class App {
 		var loadingDoneFunc = this.loadingDone.bind(this);
 		var loadingErrorFunc = this.loadingError.bind(this);
 
-		new DataSet("confirmed").processUrl(this.DataSetsPath + this.ConfirmedDataUrl, this.UrlParams, loadingDoneFunc, loadingErrorFunc );
-		new DataSet("deaths").processUrl(this.DataSetsPath + this.DeathsDataUrl, this.UrlParams, loadingDoneFunc, loadingErrorFunc );
-		new DataSet("recovered").processUrl(this.DataSetsPath + this.RecoveredDataUrl, this.UrlParams, loadingDoneFunc, loadingErrorFunc );
+		new DataSet("confirmed").processUrl(this.DataSetsPath + this.ConfirmedDataUrl, loadingDoneFunc, loadingErrorFunc );
+		new DataSet("deaths").processUrl(this.DataSetsPath + this.DeathsDataUrl, loadingDoneFunc, loadingErrorFunc );
+		new DataSet("recovered").processUrl(this.DataSetsPath + this.RecoveredDataUrl, loadingDoneFunc, loadingErrorFunc );
 
 		this.setupSectionPanel( "chartOptions");
 		this.setupSectionPanel( "countryNames");
@@ -130,13 +130,71 @@ class App {
 
 		this.setupSectionPanel( "countryNames");
 		this.setupSectionPanel( "stateNames");
+
 		this.drawChart();
+		}
+
+		if ( "confirmed" in this.DataSets	&& this.DataSets["confirmed"].Loaded &&
+				 "deaths"    in this.DataSets	&& this.DataSets["deaths"].Loaded    &&
+				 "recovered" in this.DataSets	&& this.DataSets["recovered"].Loaded ) {
+			this.createActiveDataSet();
 		}
 	}
 
 	loadingError(dataSet) {
 		console.log("Error, could not load dataset.");
 		this.addDropZone();
+	}
+
+
+	createActiveDataSet() {
+		var activeDataSet = new DataSet("active");
+		var confirmedDataSet = this.DataSets.confirmed;
+		var deathsDataSet = this.DataSets.deaths;
+		var recoveredDataSet = this.DataSets.recovered;
+
+		activeDataSet.Keys 						= confirmedDataSet.Keys;				// no need to replicate these
+		activeDataSet.DateKeys 				= confirmedDataSet.DateKeys;
+		activeDataSet.MostRecentKey 	= confirmedDataSet.MostRecentKey;
+
+
+		for(var l = 0; l < confirmedDataSet.Locations.length; l++) {
+			var cLoc = confirmedDataSet.Locations[l];
+			var dLoc = deathsDataSet.LocationByName[cLoc.LocationName];		// find same region in deaths
+			var rLoc = recoveredDataSet.LocationByName[cLoc.LocationName];	// find same region in recovered
+			var aLoc = {};
+			var foundNonZero = false;
+			var dateIndex = 0;
+
+			aLoc.FirstNonZeroDateIndex = 0;
+			for( var key in cLoc ) {
+
+				if ( confirmedDataSet.isDate(key) ) {
+					aLoc[key] = cLoc[key] - dLoc[key] - rLoc[key];		// active = confirmed - deaths - recovered
+
+					if (foundNonZero == false && aLoc[key] != 0 ) {
+						aLoc.FirstNonZeroDateIndex = dateIndex;
+						foundNonZero = true;
+					}
+					dateIndex++;
+				} else {
+					aLoc[key] = cLoc[key];
+				}
+			}
+
+			activeDataSet.Locations.push( aLoc );
+			activeDataSet.LocationByName[aLoc.LocationName] = aLoc;
+			if (aLoc.RegionType == "state" ) {
+				activeDataSet.LocationByName[aLoc.Province_State] = aLoc;
+			}
+		}
+
+		activeDataSet.Loaded = true;
+		this.DataSets.active = activeDataSet;
+
+		if ( this.UrlParams.Type == "active")
+			this.setDataSetType("active");
+
 	}
 
 	addDropZone() {
@@ -203,7 +261,7 @@ class App {
 
 
 	setDataSetType(dataSetType, doDrawChart = true) {
-		var allowedTypes = ["confirmed", "deaths", "recovered"];
+		var allowedTypes = ["confirmed", "active", "deaths", "recovered"];
 
 		if (allowedTypes.includes(dataSetType)) {
 			this.DataSetType = dataSetType;
@@ -473,7 +531,7 @@ class App {
 			if ( f.name.includes("Recovered"))	dataSetType = "recovered";
 
 			this.DataSets[dataSetType] = new DataSet(dataSetType);
-			this.DataSets[dataSetType].processFile(f, this.UrlParams, this.loadingDone.bind(this), this.loadingError.bind(this) );
+			this.DataSets[dataSetType].processFile(f, this.loadingDone.bind(this), this.loadingError.bind(this) );
 		}
 	}
 

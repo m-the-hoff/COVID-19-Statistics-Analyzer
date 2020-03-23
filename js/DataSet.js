@@ -18,7 +18,7 @@
 class DataSet {
 
 	constructor(dataSetType) {
-
+		this.Loaded = false;
 		this.Type = dataSetType;
 		this.Keys = [];
 		this.DateKeys = [];
@@ -33,7 +33,7 @@ class DataSet {
 	}
 
 
-	processUrl(url, defaultParams, doneFunc, errorFunc ) {
+	processUrl(url, doneFunc, errorFunc ) {
 		var self = this;
 
 		// read text from URL location
@@ -46,9 +46,7 @@ class DataSet {
 				if (request.status === 200) {
 					var type = request.getResponseHeader('Content-Type');
 					if (type.indexOf("text") !== 1) {
-						self.extractAllData(request.responseText, defaultParams);
-						self.addGlobalAggregate();
-						self.sortBy("Count");
+						self.processCSVData(text);
 						doneFunc(self);
 					}
 				} else {
@@ -60,19 +58,23 @@ class DataSet {
 		request.send(null);
 	}
 
-	processFile(file, defaultParams, doneFunc, errorFunc ) {
+	processFile(file, doneFunc, errorFunc ) {
 		var self = this;
 		var reader = new FileReader();
 		reader.onload = function() {
-			var text = reader.result;
-
-			self.extractAllData(text, defaultParams);
-			self.addGlobalAggregate();
-			self.sortBy("Count");
+			self.processCSVData(reader.result);
 			doneFunc( self );
 		};
 
 		reader.readAsText(file);
+	}
+
+
+	processCSVData(text) {
+		this.extractAllData(text);
+		this.addGlobalAggregate();
+		this.sortBy("Count");
+		this.Loaded = true;
 	}
 
 
@@ -151,7 +153,7 @@ class DataSet {
 		}
 	}
 
-	extractAllData(text, defaultParams) {
+	extractAllData(text) {
 		var firstLine = true;
 
 		var lines = text.split('\n');
@@ -244,9 +246,9 @@ class DataSet {
 				var count;
 
 				if (entries[k].length)
-					count = parseInt(entries[k]);
+					count = parseInt(entries[k]);		// # provided
 				else
-					count = lastCount;
+					count = lastCount;							// # missing from dataset
 
 				lastCount = count;
 				locationInfo[key] = count;

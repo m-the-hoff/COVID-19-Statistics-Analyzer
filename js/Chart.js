@@ -27,7 +27,9 @@ class Chart {
 		var dateSetTypeToTitle = {
 			"confirmed":	"COVID-19 Confirmed Cases by Country",
 			"deaths":			"COVID-19 Deaths by Country",
-			"recovered":	"COVID-19 Recovered Cases by Country"
+			"recovered":	"COVID-19 Recovered Cases by Country",
+			"active":			"COVID-19 Active Cases by Country",
+			"resolved":		"COVID-19 Resolved Cases by Country"
 		};
 
 		var countRatioToTitle = {
