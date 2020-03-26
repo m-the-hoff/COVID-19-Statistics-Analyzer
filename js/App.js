@@ -21,9 +21,9 @@ class App {
 
 	constructor() {
 		this.DataSetsPath			= "COVID-19/csse_covid_19_data/csse_covid_19_time_series/";
-		this.ConfirmedDataUrl = "time_series_19-covid-Confirmed.csv";
-		this.DeathsDataUrl		= "time_series_19-covid-Deaths.csv";
-		this.RecoveredDataUrl = "time_series_19-covid-Recovered.csv";
+		this.ConfirmedDataUrl = "time_series_covid19_confirmed_global.csv";
+		this.DeathsDataUrl		= "time_series_covid19_deaths_global.csv";
+		this.RecoveredDataUrl = "time_series_covid19_recovered_global.csv";
 		this.DataSets					= {};
 		this.AppState					= {};
 		this.CurrentDataSet		= null;
@@ -526,9 +526,9 @@ class App {
 		for (var i = 0, f; f = files[i]; i++) {
 			var dataSetType;
 
-			if ( f.name.includes("Confirmed"))	dataSetType = "confirmed";
-			if ( f.name.includes("Deaths"))			dataSetType = "deaths";
-			if ( f.name.includes("Recovered"))	dataSetType = "recovered";
+			if ( f.name.includes("confirmed"))	dataSetType = "confirmed";
+			if ( f.name.includes("deaths"))			dataSetType = "deaths";
+			if ( f.name.includes("recovered"))	dataSetType = "recovered";
 
 			this.DataSets[dataSetType] = new DataSet(dataSetType);
 			this.DataSets[dataSetType].processFile(f, this.loadingDone.bind(this), this.loadingError.bind(this) );
