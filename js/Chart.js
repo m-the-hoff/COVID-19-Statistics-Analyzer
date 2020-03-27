@@ -74,6 +74,7 @@ class Chart {
 		var chart = new CanvasJS.Chart("chart", options);
 
 		chart.render();
+		return titleName;
 	}
 
 

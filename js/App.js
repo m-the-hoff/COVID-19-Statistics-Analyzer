@@ -47,6 +47,8 @@ class App {
 
 		this.UrlParams = this.getUrlVars();
 
+		this.currentChartTitle = "COVID-19 Confirmed Cases by Country";
+
 		CanvasJS.addColorSet("oneColor", ["#880088"]);
 
 		this.Chart = new Chart();
@@ -128,10 +130,10 @@ class App {
 				this.setLocationState("Global", true, false );
 			}
 
-		this.setupSectionPanel( "countryNames");
-		this.setupSectionPanel( "stateNames");
+			this.setupSectionPanel( "countryNames");
+			this.setupSectionPanel( "stateNames");
 
-		this.drawChart();
+			this.drawChart();
 		}
 
 		if ( "confirmed" in this.DataSets	&& this.DataSets["confirmed"].Loaded &&
@@ -170,7 +172,10 @@ class App {
 			for( var key in cLoc ) {
 
 				if ( confirmedDataSet.isDate(key) ) {
-					aLoc[key] = cLoc[key] - dLoc[key] - rLoc[key];		// active = confirmed - deaths - recovered
+					if ( rLoc && key in rLoc )
+						aLoc[key] = cLoc[key] - dLoc[key] - rLoc[key];		// active = confirmed - deaths - recovered
+					else
+						aLoc[key] = cLoc[key] - dLoc[key];								// recovered not always available
 
 					if (foundNonZero == false && aLoc[key] != 0 ) {
 						aLoc.FirstNonZeroDateIndex = dateIndex;
@@ -254,7 +259,7 @@ class App {
 				"ShowCountryLabel": this.ShowCountryLabel
 			};
 
-			this.Chart.drawChart(this.CurrentDataSet, chartParameters);
+			this.currentChartTitle = this.Chart.drawChart(this.CurrentDataSet, chartParameters);
 			this.updatePageUrl();	// if we need to update chart, we also need to update the url (for sharing)
 		}
 	}
@@ -607,6 +612,34 @@ class App {
 
 		var metaNode = document.querySelector('meta[property="og:url"]');
 		metaNode.setAttribute("content", url);
+
+		/**** NOTE: DOES NOT WORK
+		var shareThisNode = document.getElementById( "sharethis" );
+		shareThisNode.setAttribute("data-url", url );
+		shareThisNode.setAttribute("data-title", this.currentChartTitle );
+		***/
+
+		/**** NOTE: DOES NOT WORK
+		var shareThisNodes = document.getElementsByClassName("st-btn");
+		for(var idx=0; idx < shareThisNodes.length; idx++) {
+			shareThisNodes[idx].setAttribute("data-url", url );
+			shareThisNodes[idx].setAttribute("data-title", this.currentChartTitle );
+		}
+		****/
+
+		/**** NOTE: DOES NOT WORK
+		window.__sharethis__.load('sharethis-inline-share-buttons', {
+		  url: url,
+		  title: this.currentChartTitle
+		});
+		****/
+
+		/**** NOTE: DOES NOT WORK
+		window.__sharethis__.initialize();
+		****/
+
+		window.__sharethis__.href = url;
+
 
 	}
 
