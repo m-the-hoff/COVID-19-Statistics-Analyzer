@@ -80,7 +80,7 @@ var gPrimaryRegionsUSA = {
 	"Florida": "FL",
 	"Georgia": "GA",
 	"Grand Princess": "Grand Princess (US)",
-	"Guam": "GU",
+	"Guam": "Guam",
 	"Hawaii": "HI",
 	"Idaho": "ID",
 	"Illinois": "IL",
@@ -109,13 +109,13 @@ var gPrimaryRegionsUSA = {
 	"Oklahoma": "OK",
 	"Oregon": "OR",
 	"Pennsylvania": "PA",
-	"Puerto Rico": "PR",
+	"Puerto Rico": "Puerto Rico",
 	"Rhode Island": "RI",
 	"South Carolina": "SC",
 	"South Dakota": "SD",
 	"Tennessee": "TN",
 	"Texas": "TX",
-	"Virgin Islands, U.S.": "VI",
+	"Virgin Islands, U.S.": "US Virgin Islands",
 	"Utah": "UT",
 	"Vermont": "VT",
 	"Virginia": "VA",
@@ -439,23 +439,23 @@ var gPopulationLookup = {
 // https://www.bbc.com/news/world-europe-guernsey-30896020
 
 gBedsPer1KLookup = {
-	"Afghanistan": 0,
-	"Albania": 0,
-	"Algeria": 0.1,
-	"Andorra": 0.2,
+	"Afghanistan": 0.5,								//indexMundi 2014
+	"Albania": 2.9,										//indexMundi 2013
+	"Algeria": 1.9,										//indexMundi
+	"Andorra": 2.5,										//indexMundi
 	"Angola": 0.8,
-	"Antigua and Barbuda": 0.2,
-	"Argentina": 0.3,
-	"Armenia": 0.3,
+	"Antigua and Barbuda": 3.8,				//indexMundi
+	"Argentina": 5,										//indexMundi
+	"Armenia": 4.2,										//indexMundi
 	"Aruba": 3.17,
-	"Australia": 3.84,
-	"Austria": 7.37,
-	"Azerbaijan": 0.5,
-	"Bahrain": 0.4,
-	"Bangladesh": 0.6,
-	"Barbados": 0.7,
-	"Belarus": 0.7,
-	"Belgium": 5.76,
+	"Australia": 3.84,								//indexMundi = 7.6
+	"Austria": 7.6,										//indexMundi
+	"Azerbaijan": 4.7,								//indexMundi
+	"Bahrain": 2.0,										//indexMundi
+	"Bangladesh": 0.8,								//indexMundi
+	"Barbados": 5.8,									//indexMundi
+	"Belarus": 11,
+	"Belgium": 6.2,										//indexMundi 2014
 	"Belize": 0.8,
 	"Benin": 0.7,
 	"Bhutan": 0.7,

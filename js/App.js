@@ -20,13 +20,12 @@
 class App {
 
 	constructor() {
-		this.DataSetsPath			= "COVID-19/csse_covid_19_data/csse_covid_19_time_series/";
-		this.ConfirmedDataUrl = "time_series_covid19_confirmed_global.csv";
-		this.DeathsDataUrl		= "time_series_covid19_deaths_global.csv";
-		this.RecoveredDataUrl = "time_series_covid19_recovered_global.csv";
-		this.DataSets					= {};
+		this.casesUrl					= "caseinfo.dat";
+		this.regionsUrl				= "regioninfo.csv";
+		this.DataSetsPath			= "COVID-19-data-resource-hub/";
+
+		this.DataSet					= new DataSetDataWorld();
 		this.AppState					= {};
-		this.CurrentDataSet		= null;
 		this.Chart						= null;
 
 		this.CountRatio					= null;
@@ -35,7 +34,7 @@ class App {
 		this.ChartType					= null;
 		this.AlignDayZero				= null;
 		this.ShowCountryLabel		= null;
-		this.DataSetType				= null;
+		this.CaseType				= null;
 
 		this.FirstCountry				= true;	 // first time a country is selected, "Global" is deselected
 		this.DropZoneAdded			= false;
@@ -55,16 +54,15 @@ class App {
 
 		this.initializeButtons();
 
-		var loadingDoneFunc = this.loadingDone.bind(this);
-		var loadingErrorFunc = this.loadingError.bind(this);
-
-		new DataSet("confirmed").processUrl(this.DataSetsPath + this.ConfirmedDataUrl, loadingDoneFunc, loadingErrorFunc );
-		new DataSet("deaths").processUrl(this.DataSetsPath + this.DeathsDataUrl, loadingDoneFunc, loadingErrorFunc );
-		new DataSet("recovered").processUrl(this.DataSetsPath + this.RecoveredDataUrl, loadingDoneFunc, loadingErrorFunc );
-
 		this.setupSectionPanel( "chartOptions");
 		this.setupSectionPanel( "countryNames");
 		this.setupSectionPanel( "stateNames");
+
+		var regionUrlLoadingDoneFunc = this.regionUrlLoadingDone.bind(this);
+		var loadingDoneFunc = this.loadingDone.bind(this);
+		var loadingErrorFunc = this.loadingError.bind(this);
+
+		this.DataSet.processUrl("regions", this.DataSetsPath + this.ConfirmedDataUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
 	}
 
 	setupSectionPanel(sectionName ) {
@@ -118,90 +116,6 @@ class App {
 	}
 
 
-	loadingDone(dataSet) {
-		this.DataSets[dataSet.Type] = dataSet;
-
-		if (dataSet.Type == this.DataSetType || this.DataSetType == null) {
-			dataSet.showDefaultRegions( this.UrlParams );
-
-			this.setDataSetType( dataSet.Type );
-
-			if (!dataSet.anyShowing()) {
-				this.setLocationState("Global", true, false );
-			}
-
-			this.setupSectionPanel( "countryNames");
-			this.setupSectionPanel( "stateNames");
-
-			this.drawChart();
-		}
-
-		if ( "confirmed" in this.DataSets	&& this.DataSets["confirmed"].Loaded &&
-				 "deaths"    in this.DataSets	&& this.DataSets["deaths"].Loaded    &&
-				 "recovered" in this.DataSets	&& this.DataSets["recovered"].Loaded ) {
-			this.createActiveDataSet();
-		}
-	}
-
-	loadingError(dataSet) {
-		console.log("Error, could not load dataset.");
-		this.addDropZone();
-	}
-
-
-	createActiveDataSet() {
-		var activeDataSet = new DataSet("active");
-		var confirmedDataSet = this.DataSets.confirmed;
-		var deathsDataSet = this.DataSets.deaths;
-		var recoveredDataSet = this.DataSets.recovered;
-
-		activeDataSet.Keys 						= confirmedDataSet.Keys;				// no need to replicate these
-		activeDataSet.DateKeys 				= confirmedDataSet.DateKeys;
-		activeDataSet.MostRecentKey 	= confirmedDataSet.MostRecentKey;
-
-
-		for(var l = 0; l < confirmedDataSet.Locations.length; l++) {
-			var cLoc = confirmedDataSet.Locations[l];
-			var dLoc = deathsDataSet.LocationByName[cLoc.LocationName];		// find same region in deaths
-			var rLoc = recoveredDataSet.LocationByName[cLoc.LocationName];	// find same region in recovered
-			var aLoc = {};
-			var foundNonZero = false;
-			var dateIndex = 0;
-
-			aLoc.FirstNonZeroDateIndex = 0;
-			for( var key in cLoc ) {
-
-				if ( confirmedDataSet.isDate(key) ) {
-					if ( rLoc && key in rLoc )
-						aLoc[key] = cLoc[key] - dLoc[key] - rLoc[key];		// active = confirmed - deaths - recovered
-					else
-						aLoc[key] = cLoc[key] - dLoc[key];								// recovered not always available
-
-					if (foundNonZero == false && aLoc[key] != 0 ) {
-						aLoc.FirstNonZeroDateIndex = dateIndex;
-						foundNonZero = true;
-					}
-					dateIndex++;
-				} else {
-					aLoc[key] = cLoc[key];
-				}
-			}
-
-			activeDataSet.Locations.push( aLoc );
-			activeDataSet.LocationByName[aLoc.LocationName] = aLoc;
-			if (aLoc.RegionType == "state" ) {
-				activeDataSet.LocationByName[aLoc.Province_State] = aLoc;
-			}
-		}
-
-		activeDataSet.Loaded = true;
-		this.DataSets.active = activeDataSet;
-
-		if ( this.UrlParams.Type == "active")
-			this.setDataSetType("active");
-
-	}
-
 	addDropZone() {
 		if ( !this.DropZoneAdded ) {
 
@@ -215,41 +129,20 @@ class App {
 		}
 	}
 
-	changeDataSet(dataSet) {
-		this.DataSetType = dataSet.Type;
-		var locNamesToShow = this.getAllShowingLocationNames();
-		this.CurrentDataSet = dataSet;
-		this.setLocationsToShow( locNamesToShow );
+
+	changeCaseType(caseType, doDrawChart = true ) {
+		this.CaseType = caseType;
+
 		this.sortBy("Country", "Count");
 		this.sortBy("State", "Count");
-		this.drawChart();
+		this.drawChart(doDrawChart);
 	}
 
-	getAllShowingLocationNames() {
-		var allShowing = [];
 
-		if (this.CurrentDataSet) {
-			for(var l = 0; l < this.CurrentDataSet.Locations.length; l++ ) {
-				if ( this.CurrentDataSet.Locations[l].Showing)
-					allShowing.push( this.CurrentDataSet.Locations[l].LocationName );
-			}
-		}
 
-		return allShowing;
-	}
-
-	setLocationsToShow( locationNames ) {
-		if (this.CurrentDataSet) {
-			for(var l = 0; l < locationNames.length; l++ ) {
-				if ( locationNames[l] in this.CurrentDataSet.LocationByName ) {
-					this.CurrentDataSet.LocationByName[ locationNames[l] ].Showing = true;
-				}
-			}
-		}
-	}
 
 	drawChart(drawChart = true) {
-		if (drawChart && this.CurrentDataSet != null) {
+		if (drawChart ) {
 			var chartParameters = {
 				"CountRatio":				this.CountRatio,
 				"Delta":						this.Delta,
@@ -259,40 +152,44 @@ class App {
 				"ShowCountryLabel": this.ShowCountryLabel
 			};
 
-			this.currentChartTitle = this.Chart.drawChart(this.CurrentDataSet, chartParameters);
-			this.updatePageUrl();	// if we need to update chart, we also need to update the url (for sharing)
+			var showingRegions = this.DataSet.getAllShowingRegions();
+			this.currentChartTitle = this.Chart.drawChart(this.CaseType, showingRegions, chartParameters);
+			this.updatePageUrl( showingRegions );	// if we need to update chart, we also need to update the url (for sharing)
 		}
 	}
 
 
-	setDataSetType(dataSetType, doDrawChart = true) {
+	setCaseType(caseType, doDrawChart = true) {
 		var allowedTypes = ["confirmed", "active", "deaths", "recovered"];
 
-		if (allowedTypes.includes(dataSetType)) {
-			this.DataSetType = dataSetType;
-			this.toggleButtonSet(allowedTypes, dataSetType);
+		if (allowedTypes.includes(caseType)) {
+			this.CaseType = caseType;
+			this.toggleButtonSet(allowedTypes, caseType);
 
-			if ( dataSetType in this.DataSets ) {
-				this.changeDataSet( this.DataSets[dataSetType] );
-			}
+			this.changeCaseType( caseType, doDrawChart );
 		}
 	}
 
+
 	selectAllCountries( state, doDrawChart = true ) {
-		this.selectAllRegions( "country", state, doDrawChart )
+		var countryList = this.DataSet.getCountryList();
+		this.selectAllRegions( countryList, state, doDrawChart )
 	}
+
 
 	selectAllStates( state, doDrawChart = true ) {
-		this.selectAllRegions( "state", state, doDrawChart )
+		var regionUSA = this.DataSet.getCountryByName( "US" );
+		if ( regionUSA ) {
+			var statesOfUSA = regionUSA.getSubRegionsList();
+		this.selectAllRegions( statesOfUSA, state, doDrawChart )
+		}
 	}
 
-	selectAllRegions(regionType, state, doDrawChart = true) {
-		var dataSet = this.CurrentDataSet;
-		var locations = dataSet.Locations;
 
-		for (var loc = 0; loc < locations.length; loc++) {
-			if (locations[loc].RegionType == regionType)
-				this.setLocationState(locations[loc].LocationName, state, false);
+	selectAllRegions(regionList, state, doDrawChart = true) {
+
+		for (var r = 0; r < regionList.length; r++) {
+				this.setLocationState(regionList[r].getName(), state, false);
 		}
 
 		this.setLocationState("Global", !state, false);
@@ -334,15 +231,17 @@ class App {
 	}
 
 
-	sortBy( category, sortField ) {
+	sortBy( category, sortType ) {
 		var allowedFields = ["Count", "Name"];
-		if (allowedFields.includes(sortField) && this.CurrentDataSet ) {
+		if (allowedFields.includes(sortType) && this.DataSet ) {
+			var sortField = sortType;
 
-			this.CurrentDataSet.sortBy(sortField);
+			if ( sortField == "Count" )
+				sortField = this.CaseType;
 
 			switch( category ) {
-				case "Country":	this.addCountryNameButtons();	break;
-				case "State": 	this.addStateNameButtons();		break;
+				case "Country":	this.addCountryNameButtons(sortField);	break;
+				case "State": 	this.addStateNameButtons(sortField);		break;
 			}
 
 			// disambiguate element IDs
@@ -350,10 +249,10 @@ class App {
 			for( var f = 0; f < allowedFields.length; f++ ) {
 				var fullField = "sort" + category + allowedFields[f];
 				fullFields.push( fullField );
-				if ( sortField === allowedFields[f] )  sortField = fullField;
+				if ( sortType === allowedFields[f] )  sortType = fullField;
 			}
 
-			this.toggleButtonSet(fullFields, sortField)
+			this.toggleButtonSet(fullFields, sortType);
 		}
 	}
 
@@ -415,27 +314,22 @@ class App {
 
 
 	toggleLocation(locationName, doDrawChart = true) {
-		var loc = this.CurrentDataSet.LocationByName[locationName];
+		var loc = this.DataSet.getRegionByName( locationName );
 
-		this.setLocationState(locationName, !loc.Showing, doDrawChart);
+		this.setLocationState(locationName, !loc.isShowing(), doDrawChart);
 	}
 
 
 	setLocationState(locationName, state, doDrawChart = true) {
-		if ( this.CurrentDataSet != null) {
-			var loc = this.CurrentDataSet.LocationByName[locationName];
+		var region = this.DataSet.getRegionByName( locationName );
 
-			loc.Showing = state;
-			this.setButtonState(locationName, state);
-			this.drawChart(doDrawChart);
-		}
+		region.setShowing(state);
+		this.setButtonState(locationName, state);
+		this.drawChart(doDrawChart);
 	}
 
 
-	addCountryNameButtons() {
-		var locs = this.CurrentDataSet.Locations;
-		var locsStr = "";
-
+	addCountryNameButtons(sortField) {
 		var countryContainerNode = document.getElementById("countryNames");
 
 		countryContainerNode.innerHTML = "";
@@ -445,19 +339,21 @@ class App {
 		this.createSpecialButton( "countryNames", "All", function() { self.selectAllCountries(true); } );
 		this.createSpecialButton( "countryNames", "None", function() { self.selectAllCountries(false); } );
 
-		if ( "Global" in this.CurrentDataSet.LocationByName) {
-			this.createRegionButton(this.CurrentDataSet.LocationByName["Global"] );
+		var globalRegion = this.DataSet.getRegionByName("Global");
+
+		if ( globalRegion ) {
+			this.createRegionButton( globalRegion );
 		}
 
-		for (var l = 0; l < locs.length; l++) {
-			if (locs[l].RegionType == "country") {
-				this.createRegionButton(locs[l]);
-			}
+		var countries = this.DataSet.getCountryList( sortField );
+
+		for (var c = 0; c < countries.length; c++) {
+			this.createRegionButton(countries[c]);
 		}
 	}
 
-	addStateNameButtons() {
-		var locs = this.CurrentDataSet.Locations;
+
+	addStateNameButtons(sortField) {
 		var locsStr = "";
 
 		var stateContainerNode = document.getElementById("stateNames");
@@ -468,10 +364,10 @@ class App {
 		this.createSpecialButton( "stateNames", "All", function() { self.selectAllStates(true); } );
 		this.createSpecialButton( "stateNames", "None", function() { self.selectAllStates(false); } );
 
-		for (var l = 0; l < locs.length; l++) {
-			if (locs[l].RegionType == "state") {
-				this.createRegionButton( locs[l], true );
-			}
+		var subRegions = this.DataSet.getSubRegionsForCountry( "US", sortField );
+
+		for (var sr = 0; sr < subRegions.length; sr++) {
+				this.createRegionButton( subRegions[sr], true );
 		}
 	}
 
@@ -488,15 +384,15 @@ class App {
 	}
 
 
-	createRegionButton( loc, isAState = false ) {
-		var locName = loc.LocationName
+	createRegionButton( region, isAState = false ) {
+		var locName = region.getName();
 		var containerNode;
 		var countryEle = document.createElement("span");
 		var self = this;
 		var label = locName;
 
-		if ( isAState ) {
-			label = loc.Province_State;
+		if ( region.isStateOrProvince() ) {
+			label = region.getShortestName();
 			containerNode = document.getElementById("stateNames");
 		} else {
 			containerNode = document.getElementById("countryNames");
@@ -505,7 +401,7 @@ class App {
 		label = label.replace(" ", "&nbsp;");
 
 		var clickFunc = function() {
-			if ( !self.CurrentDataSet.LocationByName[locName].Showing && self.FirstCountry ) {
+			if ( !region.isShowing() && self.FirstCountry ) {
 				self.setLocationState("Global", false, false );
 				this.FirstCountry = false;
 			}
@@ -513,7 +409,7 @@ class App {
 
 		}
 
-		countryEle.className = loc.Showing ? this.RegionButtonSelectedClass : this.ButtonDeselectedClass;
+		countryEle.className = region.isShowing() ? this.RegionButtonSelectedClass : this.ButtonDeselectedClass;
 		countryEle.id = locName;
 		countryEle.onclick = clickFunc;
 		countryEle.innerHTML = label;
@@ -526,20 +422,63 @@ class App {
 		evt.preventDefault();
 
 		var files = evt.dataTransfer.files; // FileList object.
+		var regionFile = null;
+		var caseFile = null;
 
 		// files is a FileList of File objects. List some properties.
 		for (var i = 0, f; f = files[i]; i++) {
-			var dataSetType;
+			var caseType;
 
-			if ( f.name.includes("confirmed"))	dataSetType = "confirmed";
-			if ( f.name.includes("deaths"))			dataSetType = "deaths";
-			if ( f.name.includes("recovered"))	dataSetType = "recovered";
+			if ( f.name.includes(".dat"))	caseFile = f;
+			if ( f.name.includes(".csv"))	regionFile = f;
+		}
 
-			this.DataSets[dataSetType] = new DataSet(dataSetType);
-			this.DataSets[dataSetType].processFile(f, this.loadingDone.bind(this), this.loadingError.bind(this) );
+		if ( regionFile ) {
+			this.DataSet.processFile("regions", regionFile, this.regionFileLoadingDone.bind(this), this.loadingError.bind(this), caseFile );
+		} else if ( caseFile ){
+			this.DataSet.processFile("cases", caseFile, this.loadingDone.bind(this), this.loadingError.bind(this) );
 		}
 	}
 
+
+
+	regionFileLoadingDone( dataSet, caseFile ) {
+		dataSet.processFile("cases", caseFile, this.loadingDone.bind(this), this.loadingError.bind(this) );
+	}
+
+
+
+	regionUrlLoadingDone( dataSet, privateData ) {
+		this.DataSet.processUrl("cases", this.DataSetsPath + this.ConfirmedDataUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
+	}
+
+
+
+	loadingDone(dataSet) {
+		// now that all the counts have been loaded,
+		// calculate the missing aggregates (if any)
+		// from each region's subregions.
+
+		dataSet.calculateCountAggregates();
+
+		dataSet.showDefaultRegions( this.UrlParams );
+
+		if (!dataSet.anyShowing()) {
+			this.setLocationState("Global", true, false );
+		}
+
+		this.changeCaseType("confirmed", false );
+
+		this.setupSectionPanel( "countryNames");
+		this.setupSectionPanel( "stateNames");
+
+		this.drawChart();
+	}
+
+	loadingError(dataSet) {
+		console.log("Error, could not load dataset.");
+		this.addDropZone();
+	}
 
 
 
@@ -559,13 +498,13 @@ class App {
 		this.setCountryLabel(this.defaultBool("label", true), false);
 
 		this.setCountRatio(this.defaultString("ratio", "absolute"), false);
-		this.setDataSetType(this.defaultString("type", "confirmed"), false);
+		this.setCaseType(this.defaultString("type", "confirmed"), false);
 		this.setChartType( this.defaultString("chart", "line"), false);
 	}
 
 
 	defaultString(key, defaultValue) {
-		if (key in this.UrlParams && typeof this.UrlParams[key] !== "undefined" ) {
+		if (key in this.UrlParams && typeof this.UrlParams[key] !== "undefined" && this.UrlParams[key] != "") {
 			return this.UrlParams[key];
 		}
 		return defaultValue;
@@ -583,7 +522,7 @@ class App {
 	}
 
 
-	updatePageUrl() {
+	updatePageUrl( showingRegions ) {
 		var params = [];
 
 		if (this.Delta)							params.push("delta");
@@ -593,15 +532,12 @@ class App {
 
 		params.push("ratio=" + this.CountRatio);
 		params.push("chart=" + this.ChartType);
-		params.push("type=" + this.CurrentDataSet.Type);
+		params.push("type=" + this.CaseType);
 
-		for(var l=0; l < this.CurrentDataSet.Locations.length; l++) {
-			var loc = this.CurrentDataSet.Locations[l];
-			if ( loc.Showing ) {
-				if ( loc.Abbreviation != "" )
-					params.push( loc.Abbreviation );
-				else
-					params.push( loc.LocationName );
+		for(var r=0; r < showingRegions.length; r++) {
+			var region = showingRegions[r];
+			if ( region.isShowing() ) {
+				params.push( region.getShortestName() );
 			}
 		}
 

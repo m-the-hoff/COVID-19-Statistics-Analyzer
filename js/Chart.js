@@ -9,19 +9,14 @@ class Chart {
 	constructor() {
 	}
 
-	drawChart(dataSet, chartParameters ) {
+	drawChart(caseType, regionsToShow, chartParameters ) {
 		var isLogarithmic = chartParameters.Logarithmic;
 
 		var allChartData = [];
 
-		for (var loc = 0; loc < dataSet.Locations.length; loc++) {
-			var location = dataSet.Locations[loc];
-
-			if (location.Showing) {
-				var data = this.buildChartMetadata(dataSet, location, chartParameters );
-
-				allChartData.push(data);
-			}
+		for (var r = 0; r < regionsToShow.length; r++) {
+			var data = this.buildChartMetadata(caseType, regionsToShow[r], chartParameters );
+			allChartData.push(data);
 		}
 
 		var dateSetTypeToTitle = {
@@ -37,7 +32,7 @@ class Chart {
 			"per1MPop":		" per 1M Population",
 			"perBed":			" as % of Hospital Beds"
 		}
-		var titleName = dateSetTypeToTitle[dataSet.Type];
+		var titleName = dateSetTypeToTitle[caseType];
 
 		titleName += chartParameters.Delta ? " Daily Deltas" : " Cumulative Total";
 		titleName += countRatioToTitle[chartParameters.CountRatio];
@@ -80,42 +75,43 @@ class Chart {
 
 
 
-	buildChartMetadata(dataSet, loc, chartParameters ) {
-		var dateKeys = dataSet.DateKeys;
-		var chartType = chartParameters.ChartType;
-		var delta = chartParameters.Delta;
-		var countRatio = chartParameters.CountRatio;
-		var alignDayZero = chartParameters.AlignDayZero;
-		var isLogarithmic = chartParameters.Logarithmic;
+	buildChartMetadata(caseType, region, chartParameters ) {
+		var chartType 		= chartParameters.ChartType;
+		var delta 				= chartParameters.Delta;
+		var countRatio 		= chartParameters.CountRatio;
+		var alignDayZero 	= chartParameters.AlignDayZero;
+		var isLogarithmic	= chartParameters.Logarithmic;
+
 		var formatString;
 		var dataPts = [];
-
 		var prevCount = 0;
-
 		var firstDateIndex = 0;
+		var shortName = region.getShortestName();
+
 		if (alignDayZero) {
-			firstDateIndex = loc.FirstNonZeroDateIndex;
+			firstDateIndex = region.getFirstNonZeroCaseIndex();
 		}
 
 		var x = 1;
 
-		for (var dk = firstDateIndex; dk < dateKeys.length; dk++) {
-			var date = dateKeys[dk];
-			var count = loc[date];
+		var caseCounts = region.getCaseCountsByCaseType( caseType );
+
+		for (var c = firstDateIndex; c < caseCounts.length; c++ ) {
+			var count = caseCounts[c];
+			var date = this.dateToLabel( region.getNthCaseDate(c) );
 			var datum;
-			var labelTxt = alignDayZero ? x : this.dateToLabel(date);
-			var shortName = (loc.RegionType == "state" ? loc.Province_State : loc.LocationName);
+			var labelTxt = alignDayZero ? x : date;
 
 			if (delta) {
 				count -= prevCount;
-				prevCount = loc[date];
+				prevCount = caseCounts[c];
 			}
 
 			if (countRatio == "per1MPop") {
-				count = 1000000 * parseFloat(count) / parseFloat(loc.Population );
+				count = 1000000 * parseFloat(count) / parseFloat(region.getPopulation() );
 
 			} else if (countRatio == "perBed") {
-				count = parseFloat(count) / parseFloat(loc.Beds);
+				count = parseFloat(count) / parseFloat(region.getBeds() );
 				formatString = "0.##%";
 			}
 
@@ -142,7 +138,7 @@ class Chart {
 				"y": count
 			};
 
-			if (chartParameters.ShowCountryLabel && dk == dateKeys.length - 1) {
+			if (chartParameters.ShowCountryLabel && c == caseCounts.length - 1) {
 				datum.indexLabel = shortName;
 			}
 			dataPts.push(datum);
@@ -165,16 +161,18 @@ class Chart {
 			showInLegend: true,
 			type: chartType,
 			dataPoints: dataPts,
-			markerSize: 1
+			markerSize: 4
 		};
 
 		return data;
 	}
 
 
-	dateToLabel(dateKey) {
-		var dmy = dateKey.split('/');
-		return dmy[0] + '/' + dmy[1];
+	dateToLabel( date ) {
+		return date.getMonth().toString() + '/' + date.getDate().toString();
 	}
+
+
+
 
 };
