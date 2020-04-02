@@ -62,7 +62,7 @@ class App {
 		var loadingDoneFunc = this.loadingDone.bind(this);
 		var loadingErrorFunc = this.loadingError.bind(this);
 
-		this.DataSet.processUrl("regions", this.DataSetsPath + this.ConfirmedDataUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
+		this.DataSet.processUrl("regions", this.DataSetsPath + this.regionsUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
 	}
 
 	setupSectionPanel(sectionName ) {
@@ -449,7 +449,7 @@ class App {
 
 
 	regionUrlLoadingDone( dataSet, privateData ) {
-		this.DataSet.processUrl("cases", this.DataSetsPath + this.ConfirmedDataUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
+		this.DataSet.processUrl("cases", this.DataSetsPath + this.casesUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
 	}
 
 
