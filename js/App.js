@@ -449,7 +449,7 @@ class App {
 
 
 	regionUrlLoadingDone( dataSet, privateData ) {
-		this.DataSet.processUrl("cases", this.DataSetsPath + this.casesUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
+		dataSet.processUrl("cases", this.DataSetsPath + this.casesUrl, this.loadingDone.bind(this), this.loadingError.bind(this) );
 	}
 
 
