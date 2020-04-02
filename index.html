@@ -50,37 +50,35 @@
 	<hr/>
 	<div class="sectionLabel" ><span onclick="gApp.toggleSection('chartOptions');"><div id="chartOptionsArrow" class="downArrow"></div>Choose chart options.</span></div>
 	<div class="section" id="chartOptions">
-		<span class="buttonBase button" id="linear" onclick="gApp.setLogarithmic(false);">Linear</span>
-		<span class="buttonBase button" id="logarithmic" onclick="gApp.setLogarithmic(true);">Log10</span>
+		<span class="buttonBase button" id="linear" onclick="gApp.setLogarithmic(false);">Linear<div class="tooltiptext"><p>Show all data on a linear scale. If there is significant variation on quantities between regions, try Log10 scale.</p><i></i></div></span>
+		<span class="buttonBase button" id="logarithmic" onclick="gApp.setLogarithmic(true);">Log10<div class="tooltiptext"><p>Show all data on a base 10 logarithmic scale. This is useful to see if the exponential growth is steady, increasing or decreasing. It is also useful of the quantities vary significantly.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="line" onclick="gApp.setChartType('line');">Line</span>
-		<span class="buttonBase button" id="stackedColumn" onclick="gApp.setChartType('stackedColumn');">Bar</span>
-		<span class="buttonBase button" id="stackedArea" onclick="gApp.setChartType('stackedArea');">Stacked</span>
+		<span class="buttonBase button" id="line" onclick="gApp.setChartType('line');">Line<div class="tooltiptext"><p>Each region is represented by an independent line on graph.</p><i></i></div></span>
+		<span class="buttonBase button" id="stackedColumn" onclick="gApp.setChartType('stackedColumn');">Bar<div class="tooltiptext"><p>Region values for each day are shown as stacked bars.</p><i></i></div></span>
+		<span class="buttonBase button" id="stackedArea" onclick="gApp.setChartType('stackedArea');">Stacked<div class="tooltiptext"><p>Region values are shown as cumulative, stacked areas. Note that when aligning day zeroes, any non-existent data points cause anomalies in this mode.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="cumulative" onclick="gApp.setDelta(false);">Cumulative</span>
-		<span class="buttonBase button" id="delta" onclick="gApp.setDelta(true);">Daily &#x394;</span>
+		<span class="buttonBase button" id="cumulative" onclick="gApp.setDelta(false);">Cumulative<div class="tooltiptext"><p>Each day shows the total cumulative counts for each region.</p><i></i></div></span>
+		<span class="buttonBase button" id="delta" onclick="gApp.setDelta(true);">Daily &#x394;<div class="tooltiptext"><p>Each day shows the amount of increase or decrease compared to the previous day for each region.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="absolute" onclick="gApp.setCountRatio('absolute');">Count</span>
-		<span class="buttonBase button" id="per1MPop" onclick="gApp.setCountRatio('per1MPop');">per 1M Pop</span>
-		<span class="buttonBase button" id="perBed" onclick="gApp.setCountRatio('perBed');">per Bed</span>
+		<span class="buttonBase button" id="absolute" onclick="gApp.setCountRatio('absolute');">Count<div class="tooltiptext"><p>Numbers shown are the actual # of cases/deaths for that region.</p><i></i></div></span>
+		<span class="buttonBase button" id="per1MPop" onclick="gApp.setCountRatio('per1MPop');">Per 1M Pop<div class="tooltiptext"><p>Numbers shown are the # of cases/deaths per 1M people living in that region.</p><i></i></div></span>
+		<span class="buttonBase button" id="perBed" onclick="gApp.setCountRatio('perBed');">Per Bed<div class="tooltiptext"><p>Numbers shown are the # of cases/deaths per hospital bed in that region. Note this does not factor in actual availability of those beds.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="absoluteDates" onclick="gApp.setAlignDayZero(false);">By Date</span>
-		<span class="buttonBase button" id="alignDayZero" onclick="gApp.setAlignDayZero(true);">Align Day 0's</span>
+		<span class="buttonBase button" id="absoluteDates" onclick="gApp.setAlignDayZero(false);">By Date<div class="tooltiptext"><p>All counts are presented according to the calendar date it occurred on.</p><i></i></div></span>
+		<span class="buttonBase button" id="alignDayZero" onclick="gApp.setAlignDayZero(true);">Align Day 0's<div class="tooltiptext"><p>Counts are shown as the relative day from when the outbreak started in each region. The x axis is the relative day since the outbreak started in each region.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="confirmed" onclick="gApp.setDataSetType('confirmed');">Confirmed</span>
-		<span class="buttonBase button" id="active" onclick="gApp.setDataSetType('active');">Active</span>
-		<span class="buttonBase button" id="deaths" onclick="gApp.setDataSetType('deaths');">Deaths</span>
-		<span class="buttonBase button" id="recovered" onclick="gApp.setDataSetType('recovered');">Recovered</span>
+		<span class="buttonBase button" id="confirmed" onclick="gApp.setCaseType('confirmed');">Confirmed<div class="tooltiptext"><p>All counts are based on reported confirmed cases.</p><i></i></div></span>
+		<span class="buttonBase button" id="deaths" onclick="gApp.setCaseType('deaths');">Deaths<div class="tooltiptext"><p>All counts are based on reported deaths.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="countryLabel" onclick="gApp.toggleCountryLabel();">Chart Label</span>
+		<span class="buttonBase button" id="countryLabel" onclick="gApp.toggleCountryLabel();">Chart Label<div class="tooltiptext"><p>Toggle the region name on or off at the last datapoint for each region's line, bar, or area.</p><i></i></div></span>
 	</div>
 	<hr/>
-	<div class="sectionLabel"><span onclick="gApp.toggleSection('countryNames');"><div id="countryNamesArrow" class="downArrow"></div>Choose any combination of countries.</span>&nbsp;&nbsp;&nbsp;Sort by:
+	<div class="sectionLabel"><span onclick="gApp.toggleSection('countryNames');"><div id="countryNamesArrow" class="downArrow"></div>Choose any combination of countries.</span><span class="sortBy">Sort by:</span>
 		<span class="buttonBase buttonSpecial" id="sortCountryCount" onclick="gApp.sortBy('Country','Count');">Count</span>
 		<span class="buttonBase" id="sortCountryName" onclick="gApp.sortBy('Country','Name');">Name</span></div>
 		<div class="section" id="countryNames"></div>
 	<hr/>
-	<div class="sectionLabel"><span onclick="gApp.toggleSection('stateNames');"><div id="stateNamesArrow" class="downArrow"></div>Choose any combination of US states and regions. [NOTE: data source changed. I plan to have U.S. States fixed by Mar 29]</span>&nbsp;&nbsp;&nbsp;Sort by:
+	<div class="sectionLabel"><span onclick="gApp.toggleSection('stateNames');"><div id="stateNamesArrow" class="downArrow"></div>Choose any combination of US states and regions. [NOTE: data source changed. I plan to have U.S. States fixed by Mar 29]</span><span class="sortBy">Sort by:</span>
 		<span class="buttonBase buttonSpecial" id="sortStateCount" onclick="gApp.sortBy('State','Count');">Count</span>
 		<span class="buttonBase" id="sortStateName" onclick="gApp.sortBy('State','Name');">Name</span></div>
 		<div class="section" id="stateNames"></div>

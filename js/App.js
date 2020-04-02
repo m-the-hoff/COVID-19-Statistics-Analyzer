@@ -160,7 +160,7 @@ class App {
 
 
 	setCaseType(caseType, doDrawChart = true) {
-		var allowedTypes = ["confirmed", "active", "deaths", "recovered"];
+		var allowedTypes = ["confirmed", "deaths"];
 
 		if (allowedTypes.includes(caseType)) {
 			this.CaseType = caseType;
@@ -546,16 +546,18 @@ class App {
 
 		window.history.replaceState( null, "", url );
 
+		/**** NOTE: DOES NOT WORK FOR DYNAMICALLY UPDATING ***/
+		/* Still useful for FB? */
 		var metaNode = document.querySelector('meta[property="og:url"]');
 		metaNode.setAttribute("content", url);
 
-		/**** NOTE: DOES NOT WORK
+		/**** NOTE: DOES NOT WORK FOR DYNAMICALLY UPDATING
 		var shareThisNode = document.getElementById( "sharethis" );
 		shareThisNode.setAttribute("data-url", url );
 		shareThisNode.setAttribute("data-title", this.currentChartTitle );
 		***/
 
-		/**** NOTE: DOES NOT WORK
+		/**** NOTE: DOES NOT WORK FOR DYNAMICALLY UPDATING
 		var shareThisNodes = document.getElementsByClassName("st-btn");
 		for(var idx=0; idx < shareThisNodes.length; idx++) {
 			shareThisNodes[idx].setAttribute("data-url", url );
@@ -563,14 +565,14 @@ class App {
 		}
 		****/
 
-		/**** NOTE: DOES NOT WORK
+		/**** NOTE: DOES NOT WORK FOR DYNAMICALLY UPDATING
 		window.__sharethis__.load('sharethis-inline-share-buttons', {
 		  url: url,
 		  title: this.currentChartTitle
 		});
 		****/
 
-		/**** NOTE: DOES NOT WORK
+		/**** NOTE: DOES NOT WORK FOR DYNAMICALLY UPDATING
 		window.__sharethis__.initialize();
 		****/
 
@@ -590,4 +592,16 @@ class App {
 		return vars;
 	}
 
+
+
+	addToolTip( nodeID, helpText ) {
+		var node = document.getElementByID( nodeID );
+		var tooltipNode = document.createElement("span");
+
+		tooltipNode.className = "tooltiptext";
+		tooltipNode.innerHTML = helpText;
+
+		node.appendChild(tooltipNode);
+
+	}
 };

@@ -25,7 +25,7 @@ class Region {
 		this.ID							= parseInt(fields.id);
 		this.Type						= fields.regionType;										// "country", "state", "province", "county", "other"
 		this.Level					= parseInt(fields.regionLevel);					// 1=country/other, 2=province/state, 3=county
-		this.LocationName 	= fields.locationName;
+		this.LocationName 	= this.normalizeRegionSynonyms(fields.locationName);
 		this.ShortName 			= fields.altLocationName;
 		this.Longitude			= parseInt(fields.longitude);
 		this.Latitude				= parseInt(fields.latitude);
@@ -33,9 +33,9 @@ class Region {
 		this.BaseDate				= new Date(2020, 1, 22, 0, 0, 0, 0);	// base date is always 2020-01-22
 		this.FirstNonZeroIndex = null;
 
-		if (this.Level < 3) {
-			this.Population			= this.lookupPopulation(this.LocationName);
-			this.Beds						= this.lookupBeds(this.LocationName);
+		if (this.Level < 2 || this.Type == "state") {
+			this.Population			= this.lookupPopulation();
+			this.Beds						= this.lookupBeds();
 		}
 
 		switch( this.Level ) {
@@ -59,6 +59,15 @@ class Region {
 		this.ActiveAccessorFunc 		= function(a) { return a.Counts.active   [ a.Counts.active.length    - 1 ]; };
 
 	}
+
+
+	normalizeRegionSynonyms(regionName) {
+		if (regionName in gRegionSynonyms) {
+			regionName = gRegionSynonyms[regionName];
+		}
+		return regionName;
+	}
+
 
 	hasSubRegions() {
 		return this.SubRegions.keys().length > 0;
@@ -215,22 +224,27 @@ class Region {
 
 
 
-	lookupBeds(regionName) {
-		if (regionName in gBedsPer1KLookup && regionName in gPopulationLookup) {
-			return gBedsPer1KLookup[regionName] * gPopulationLookup[regionName] / 1000.0;
+	lookupBeds()
+	 {
+		if (this.LocationName in gBedsPer1KLookup && this.LocationName in gPopulationLookup) {
+			return gBedsPer1KLookup[this.LocationName] * gPopulationLookup[this.LocationName] / 1000.0;
+		} else if (this.ShortName in gBedsPer1KLookup && this.ShortName in gPopulationLookup) {
+			return gBedsPer1KLookup[this.ShortName] * gPopulationLookup[this.ShortName] / 1000.0;
 		} else {
-			console.log("No beds (and population) found for: " + regionName);
+			console.log("No beds (and population) found for: " + this.LocationName);
 			return 0;
 		}
 	}
 
 
 
-	lookupPopulation(regionName) {
-		if (regionName in gPopulationLookup) {
-			return gPopulationLookup[regionName];
+	lookupPopulation() {
+		if (this.LocationName in gPopulationLookup) {
+			return gPopulationLookup[this.LocationName];
+		} else if (this.ShortName in gPopulationLookup) {
+			return gPopulationLookup[this.ShortName];
 		} else {
-			console.log("No population found for: " + regionName);
+			console.log("No population found for: " + this.LocationName);
 			return 0;
 		}
 	}

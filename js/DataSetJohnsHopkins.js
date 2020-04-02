@@ -387,11 +387,11 @@ class DataSetJohnsHopkins {
 	}
 
 
-	normalizeCountrySynonyms(countryName) {
-		if (countryName in gCountrySynonyms) {
-			countryName = gCountrySynonyms[countryName];
+	normalizeRegionSynonyms(regionName) {
+		if (regionName in gRegionSynonyms) {
+			regionName = gRegionSynonyms[regionName];
 		}
-		return countryName;
+		return regionName;
 	}
 
 

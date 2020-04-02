@@ -86,7 +86,7 @@ class Chart {
 		var dataPts = [];
 		var prevCount = 0;
 		var firstDateIndex = 0;
-		var shortName = region.getShortestName();
+		var labelName = region.getName();
 
 		if (alignDayZero) {
 			firstDateIndex = region.getFirstNonZeroCaseIndex();
@@ -139,11 +139,12 @@ class Chart {
 			};
 
 			if (chartParameters.ShowCountryLabel && c == caseCounts.length - 1) {
-				datum.indexLabel = shortName;
+				datum.indexLabel = region.getShortestName();
 			}
 			dataPts.push(datum);
 			x++;
 		}
+
 
 		if (alignDayZero) {
 			// fill rest of data set w/o y values
@@ -152,11 +153,16 @@ class Chart {
 					"x": x++
 				});
 			}
+		} else if ( chartParameters.ShowCountryLabel ){
+			// kludge to give enough space for labels
+			dataPts.push( { "x": x++, "label": " " } );
+			dataPts.push( { "x": x++, "label": " " } );
 		}
+
 
 		var data = {
 			indexLabelFontSize: 9,
-			name: shortName,
+			name: labelName,
 			toolTipContent: "{name} on day {label}: {y}",
 			showInLegend: true,
 			type: chartType,

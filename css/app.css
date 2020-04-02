@@ -3,6 +3,60 @@ body {
 }
 
 
+
+.buttonBase .tooltiptext {
+    min-width:200px;
+    top:50%;
+    left:100%;
+    margin-left:10px;
+    transform:translate(0, -50%);
+    padding:5px 5px;
+    color:#444444;
+    background-color:#cccc00;
+    font-weight:normal;
+    font-size:13px;
+    border-radius:8px;
+    position:absolute;
+    z-index:99999;
+    box-sizing:border-box;
+    box-shadow:0 1px 8px rgba(0,0,0,0.5);
+    visibility:hidden;
+		opacity:0;
+		transition:opacity 0.4s;
+		text-shadow: none;
+}
+
+.buttonBase:hover .tooltiptext {
+    visibility:visible;
+		opacity:1;
+	  transition-delay: 0.25s;
+}
+
+.buttonBase .tooltiptext i {
+    position:absolute;
+    top:50%;
+    right:100%;
+    margin-top:-12px;
+    width:12px;
+    height:24px;
+    overflow:hidden;
+}
+
+.buttonBase .tooltiptext i::after {
+    content:'';
+    position:absolute;
+    width:12px;
+    height:12px;
+    left:0;
+    top:50%;
+    transform:translate(50%,-50%) rotate(-45deg);
+    background-color:#cccc00;
+    box-shadow:0 1px 8px rgba(0,0,0,0.5);
+}
+
+
+
+
 .dropZone {
 	border: 2px dashed #bbb;
 	-moz-border-radius: 5px;
@@ -46,15 +100,17 @@ a {
 	z-index: 500;
 	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
  	font-size: 9pt;
-	color: #888;
+	color: #444;
 	margin-bottom: 5px;
 	width: 100%;
 	cursor:pointer;
 }
 
 
-.section {
-	overflow:hidden;
+.sortBy {
+	margin-left: 30px;
+}
+.section{
 	width: 100%;
 }
 
@@ -78,7 +134,6 @@ a {
 
 
 .buttonBase {
-	z-index: 1000;
 	font-family:Helvetica Neue, Helvetica, Arial, sans-serif;
 	font-size: 10pt;
 	margin: 1px;
@@ -92,8 +147,10 @@ a {
 	line-height: 100 px;
 	white-space:pre-wrap;
 	display:inline-block;
+	position:relative;
 	cursor: pointer;
 	text-shadow: 1px 1px #888;
+
 }
 
 
