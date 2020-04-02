@@ -415,6 +415,7 @@ class DataSetDataWorld {
 		// read text from URL location
 		var request = new XMLHttpRequest();
 		request.open('GET', url, true);
+		request.responseType = "arraybuffer";
 		request.setRequestHeader( "Cache-Control", "must-revalidate" );
 
 		request.onreadystatechange = function() {
