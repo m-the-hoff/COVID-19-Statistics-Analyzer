@@ -121,7 +121,7 @@ class App {
 
 			// Setup the dnd listeners.
 			var dropZone = document.getElementById('dropZone');
-			dropZone.innerHTML = "Drop csse_covid_19_data csv file here";
+			dropZone.innerHTML = "Drop regioninfo.csv and caseinfo.dat files here for local testing";
 			dropZone.className = "dropZone";
 			dropZone.addEventListener('dragover', this.handleDragOver.bind(this), false);
 			dropZone.addEventListener('drop', this.handleFileSelect.bind(this), false);
@@ -471,6 +471,9 @@ class App {
 
 		this.setupSectionPanel( "countryNames");
 		this.setupSectionPanel( "stateNames");
+
+		var dropZone = document.getElementById('dropZone');
+		dropZone.style.visibility = "hidden";
 
 		this.drawChart();
 	}

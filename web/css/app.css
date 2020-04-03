@@ -68,7 +68,8 @@ body {
 	font: 20pt;
 	color: #888;
 	position: absolute;
-	width: 300px;
+	left: 100px;
+	width: 500px;
 	z-index: 1000;
 	cursor: pointer;
 
