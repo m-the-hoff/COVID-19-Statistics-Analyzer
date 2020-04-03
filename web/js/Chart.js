@@ -11,7 +11,7 @@ class Chart {
 
 	drawChart(caseType, regionsToShow, chartParameters ) {
 		var isLogarithmic = chartParameters.Logarithmic;
-
+		var labelInterval;
 		var allChartData = [];
 
 		for (var r = 0; r < regionsToShow.length; r++) {
@@ -38,6 +38,14 @@ class Chart {
 		titleName += countRatioToTitle[chartParameters.CountRatio];
 		titleName += chartParameters.AlignDayZero ? " with Day Zeroes Aligned" : "";
 
+		if ( window.innerWidth > 1200 ) {
+			labelInterval = 1;
+		} else if ( window.innerWidth > 800 ) {
+			labelInterval = 2;
+		} else {
+			labelInterval = 5;
+		}
+
 		var options = {
 			animationEnabled: false,
 			theme: "light2",
@@ -57,7 +65,7 @@ class Chart {
 			axisX: {
 				labelFontSize: 11,
 				labelAngle: 90,
-				interval: 1
+				interval: labelInterval
 			},
 			data: allChartData
 		};
@@ -93,13 +101,13 @@ class Chart {
 		}
 
 		var x = 1;
+		var datum;
 
 		var caseCounts = region.getCaseCountsByCaseType( caseType );
 
 		for (var c = firstDateIndex; c < caseCounts.length; c++ ) {
 			var count = caseCounts[c];
 			var date = this.dateToLabel( region.getNthCaseDate(c) );
-			var datum;
 			var labelTxt = alignDayZero ? x : date;
 
 			if (delta) {
@@ -140,6 +148,7 @@ class Chart {
 
 			if (chartParameters.ShowCountryLabel && c == caseCounts.length - 1) {
 				datum.indexLabel = region.getShortestName();
+				datum.indexLabelMaxWidth = 120;
 			}
 			dataPts.push(datum);
 			x++;
@@ -155,15 +164,23 @@ class Chart {
 			}
 		} else if ( chartParameters.ShowCountryLabel ){
 			// kludge to give enough space for labels
-			dataPts.push( { "x": x++, "label": " " } );
-			dataPts.push( { "x": x++, "label": " " } );
+			dataPts.push({ "x": x++, "label": " " });
+			dataPts.push({ "x": x++, "label": " " });
+
 		}
 
+		var toolTip;
+
+		switch (countRatio) {
+				case "per1MPop": toolTip = "{name} on day {label}: {y}/1M Pop"; break;
+				case "perBed": toolTip = "{name} on day {label}: {y}/Bed"; break;
+				default: toolTip = "{name} on day {label}: {y}"; break;
+			}
 
 		var data = {
 			indexLabelFontSize: 9,
 			name: labelName,
-			toolTipContent: "{name} on day {label}: {y}",
+			toolTipContent: toolTip,
 			showInLegend: true,
 			type: chartType,
 			dataPoints: dataPts,

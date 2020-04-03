@@ -12,7 +12,7 @@ regioninfo.csv		Contains all regions that are currently available in the data se
 For local testing, these 2 files can be dropped directly onto the provided drop zone when the index.html file is opened in a local browser. When index.html is loaded from a web server, these are retrieved automatically because they won't invoke a cross domain error.
 
 
-processDataWorld.py can either process a local CSV data file, or retreive directly from https://data.world/covid-19-data-resource-hub/covid-19-case-counts/
+processDataWorld.py can either process a local CSV data file, or retreive directly from https://data.world/covid-19-data-resource-hub/
 
 See the processDataWorld.py file header for more information
 
