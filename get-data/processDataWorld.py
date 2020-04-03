@@ -1,8 +1,8 @@
 #########################################################################
 # processDataWorld.py
 #
-# Author:	Michael Hoffman
-#			http://linkedin.com/in/mthoffman
+# Author:  Michael Hoffman
+#          http://linkedin.com/in/mthoffman
 #
 # Description:
 #
@@ -12,7 +12,7 @@
 #
 # from the database provided at:
 #
-# https://data.world/covid-19-data-resource-hub/covid-19-case-counts/
+# https://data.world/covid-19-data-resource-hub/
 #
 # NOTE: You are able to create your own workspace at this site and save
 # your own SQL query which will provide a URL of the form:

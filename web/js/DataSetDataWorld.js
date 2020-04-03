@@ -1,18 +1,25 @@
 
-/****************************************
+/**************************************************
 ** DataSetDataWorld.js
 ** by: Michael T Hoffman
 **
-** Manage datasets from data.world by
-** the COVID-19 Data Resource Hub
+** Manage datasets retrieved from data.world
+** by the COVID-19 Data Resource Hub
 **
 **		https://data.world/covid-19-data-resource-hub
+**
+** The data is retrieved by the
+** get-data/processDataWorld.py python script
+** that converts the large data set into
+** a more compact format in two files that
+** are then stored in the COVID-19-data-resource-hub
+** directory.
 **
 ** Dataset contains:
 **	- confirmed
 **	- deaths
 **
-****************************************/
+**************************************************/
 
 
 

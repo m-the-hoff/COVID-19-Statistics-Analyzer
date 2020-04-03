@@ -2,8 +2,15 @@
 ** DataSetJohnsHopkins.js
 ** by: Michael T Hoffman
 **
-** Manage one of the following datasets
-** from the Johns Hopkins CSSE data
+** NOTE: DEPRECATED
+**
+** Use DataSetDataWorld.js instaed to read
+** JH CSSE derivative data on data.world
+**
+** Description:
+**
+** Each instance manages one of the following case
+** datasets from the Johns Hopkins CSSE data
 ** retrieved from:
 **
 **		https://github.com/CSSEGISandData/COVID-19

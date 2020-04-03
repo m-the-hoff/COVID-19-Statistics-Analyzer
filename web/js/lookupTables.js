@@ -1,4 +1,4 @@
-/****************************************
+/********************************************************************************
 ** lookupTables.js
 ** by: Michael T Hoffman
 **
@@ -8,13 +8,8 @@
 **
 ** TODO
 **
-**	- Disambiguate when provinces from different countries are same name, like "Diamond Princess"
-**	- Only turn "Global" on when no countries OR states are selected
-**	- Add "per beds"
-**	- Ability to sort countries and states
 **
-**
-****************************************/
+********************************************************************************/
 
 
 // This lookup is primarily needed to get rid of Province names
