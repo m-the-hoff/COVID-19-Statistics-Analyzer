@@ -153,6 +153,8 @@ class App {
 			};
 
 			var showingRegions = this.DataSet.getAllShowingRegions();
+			showingRegions = Region.sortRegions( showingRegions, this.CaseType );
+
 			this.currentChartTitle = this.Chart.drawChart(this.CaseType, showingRegions, chartParameters);
 			this.updatePageUrl( showingRegions );	// if we need to update chart, we also need to update the url (for sharing)
 		}
@@ -225,7 +227,7 @@ class App {
 			this.drawChart(doDrawChart);
 
 			if (chartType != "line") {
-				this.setCountRatio(this.defaultString("ratio", "absolute"), false);
+				this.setCountRatio("absolute", false);
 			}
 		}
 	}
@@ -257,13 +259,14 @@ class App {
 	}
 
 
-	setDelta(isDelta, doDrawChart = true) {
-		if (isDelta != this.Delta) {
-			this.Delta = isDelta;
-			this.toggleButtonPair("delta", "cumulative", isDelta);
-			if (isDelta) {
-				this.setCountRatio(this.defaultString("ratio", "absolute"), false);
-				this.setChartType( this.defaultString("chart", "stackedColumn"), false);
+	setDelta(deltaType, doDrawChart = true) {
+		var allowedTypes = ["cumulative", "deltaCount", "deltaPercent"];
+		if (allowedTypes.includes(deltaType) && deltaType != this.Delta) {
+			this.Delta = deltaType;
+			this.toggleButtonSet(allowedTypes, deltaType)
+			if (deltaType != "cumulative") {
+				this.setCountRatio("absolute", false);
+				this.setChartType("stackedColumn", false);
 			}
 			this.drawChart(doDrawChart);
 		}
@@ -495,11 +498,11 @@ class App {
 
 
 	initializeButtons() {
-		this.setDelta(this.defaultBool("delta", false), false);
 		this.setLogarithmic( this.defaultBool("log", false), false);
 		this.setAlignDayZero(this.defaultBool("align0", false), false);
 		this.setCountryLabel(this.defaultBool("label", true), false);
 
+		this.setDelta(this.defaultString("delta", "cumulative"), false);
 		this.setCountRatio(this.defaultString("ratio", "absolute"), false);
 		this.setCaseType(this.defaultString("type", "confirmed"), false);
 		this.setChartType( this.defaultString("chart", "line"), false);

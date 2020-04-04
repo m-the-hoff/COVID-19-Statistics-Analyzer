@@ -25,8 +25,15 @@
 
 
 class Region {
+	// used for getting to correct data for sorting comparision
+	static ConfirmedAccessorFunc 	= function(a) { return a.Counts.confirmed[ a.Counts.confirmed.length - 1 ]; };
+	static DeathsAccessorFunc 		= function(a) { return a.Counts.deaths   [ a.Counts.deaths.length    - 1 ]; };
+	static RecoveredAccessorFunc 	= function(a) { return a.Counts.recovered[ a.Counts.recovered.length - 1 ]; };
+	static ActiveAccessorFunc 		= function(a) { return a.Counts.active   [ a.Counts.active.length    - 1 ]; };
 
 	constructor( fields ) {
+
+
 		this.Parent 				= null;																	// set when added to a parent region
 		this.SubRegions 		= {};																		// province/state if a country, or county if a state
 		this.ID							= parseInt(fields.id);
@@ -58,12 +65,6 @@ class Region {
 			"recovered": 		[],
 			"active": 			[]
 		};
-
-		// used for getting to correct data for sorting comparision
-		this.ConfirmedAccessorFunc 	= function(a) { return a.Counts.confirmed[ a.Counts.confirmed.length - 1 ]; };
-		this.DeathsAccessorFunc 		= function(a) { return a.Counts.deaths   [ a.Counts.deaths.length    - 1 ]; };
-		this.RecoveredAccessorFunc 	= function(a) { return a.Counts.recovered[ a.Counts.recovered.length - 1 ]; };
-		this.ActiveAccessorFunc 		= function(a) { return a.Counts.active   [ a.Counts.active.length    - 1 ]; };
 
 	}
 
@@ -197,7 +198,7 @@ class Region {
 		}
 
 		if ( sortField != null) {
-			this.sortRegions( regions, sortField )
+			Region.sortRegions( regions, sortField )
 		}
 
 		return regions;
@@ -290,7 +291,7 @@ class Region {
 
 	// sortField   "Confirmed" | "Deaths" | "Recovered" | "Active" | "Name" | "Population" | "Beds" | "PerCapita"
 
-	sortRegions( regionList, sortField ) {
+	static sortRegions( regionList, sortField ) {
 		var compareFunc;
 		var accessorFunc;
 
@@ -308,10 +309,10 @@ class Region {
 		compareFunc = countCompareDescendingFunc;
 
 		switch( sortField.toLowerCase() ) {
-			case "confirmed":		accessorFunc = this.ConfirmedAccessorFunc;		break;
-			case "deaths":			accessorFunc = this.DeathsAccessorFunc;				break;
-			case "recovered":		accessorFunc = this.RecoveredAccessorFunc;		break;
-			case "active":			accessorFunc = this.ActiveAccessorFunc;				break;
+			case "confirmed":		accessorFunc = Region.ConfirmedAccessorFunc;		break;
+			case "deaths":			accessorFunc = Region.DeathsAccessorFunc;				break;
+			case "recovered":		accessorFunc = Region.RecoveredAccessorFunc;		break;
+			case "active":			accessorFunc = Region.ActiveAccessorFunc;				break;
 
 			case "name":	sortField = "LocationName";
 										compareFunc = strCompareFunc

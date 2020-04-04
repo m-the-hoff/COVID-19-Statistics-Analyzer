@@ -25,10 +25,10 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
-<script src="js/Chart.js?v=9"></script>
-<script src="js/DataSetDataWorld.js?v=9"></script>
-<script src="js/App.js?v=9"></script>
-<script src="js/lookupTables.js?v=9"></script>
+<script src="js/Chart.js?v=10"></script>
+<script src="js/DataSetDataWorld.js?v=10"></script>
+<script src="js/App.js?v=10"></script>
+<script src="js/lookupTables.js?v=10"></script>
 
 <script async src="https://platform-api.sharethis.com/js/sharethis.js#property=5e7100c7e6ed020012c4f4b7&product=sticky-share-buttons"></script>
 
@@ -57,8 +57,9 @@
 		<span class="buttonBase button" id="stackedColumn" onclick="gApp.setChartType('stackedColumn');">Bar<div class="tooltiptext"><p>Region values for each day are shown as stacked bars.</p><i></i></div></span>
 		<span class="buttonBase button" id="stackedArea" onclick="gApp.setChartType('stackedArea');">Stacked<div class="tooltiptext"><p>Region values are shown as cumulative, stacked areas. Note that when aligning day zeroes, any non-existent data points cause anomalies in this mode.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="cumulative" onclick="gApp.setDelta(false);">Cumulative<div class="tooltiptext"><p>Each day shows the total cumulative counts for each region.</p><i></i></div></span>
-		<span class="buttonBase button" id="delta" onclick="gApp.setDelta(true);">Daily &#x394;<div class="tooltiptext"><p>Each day shows the amount of increase or decrease compared to the previous day for each region.</p><i></i></div></span>
+		<span class="buttonBase button" id="cumulative" onclick="gApp.setDelta('cumulative');">Cumulative<div class="tooltiptext"><p>Each day shows the total cumulative counts for each region.</p><i></i></div></span>
+		<span class="buttonBase button" id="deltaCount" onclick="gApp.setDelta('deltaCount');">Daily &#x394;<div class="tooltiptext"><p>Each day shows the amount of increase or decrease in count compared to the previous day, for each region.</p><i></i></div></span>
+		<span class="buttonBase button" id="deltaPercent" onclick="gApp.setDelta('deltaPercent');">Daily &#x394;%<div class="tooltiptext"><p>Each day shows the amount of increase or decrease compared to the previous day as a percentage of the total, for each region.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
 		<span class="buttonBase button" id="absolute" onclick="gApp.setCountRatio('absolute');">Count<div class="tooltiptext"><p>Numbers shown are the actual # of cases/deaths for that region.</p><i></i></div></span>
 		<span class="buttonBase button" id="per1MPop" onclick="gApp.setCountRatio('per1MPop');">Per 1M Pop<div class="tooltiptext"><p>Numbers shown are the # of cases/deaths per 1M people living in that region.</p><i></i></div></span>
