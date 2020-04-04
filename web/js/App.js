@@ -64,8 +64,14 @@ class App {
 		var loadingErrorFunc = this.loadingError.bind(this);
 
 		this.DataSet.processUrl("regions", this.DataSetsPath + this.regionsUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
+
+		window.onresize = this.onWindowResize.bind(this);
 	}
 
+
+	onWindowResize() {
+		this.drawChart();
+	}
 
 
 	setupSectionPanel(sectionName ) {

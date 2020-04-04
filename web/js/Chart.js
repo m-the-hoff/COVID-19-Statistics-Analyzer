@@ -54,7 +54,7 @@ class Chart {
 		titleName += countRatioToTitle[chartParameters.CountRatio];
 		titleName += chartParameters.AlignDayZero ? " with Day Zeroes Aligned" : "";
 
-		if ( window.innerWidth > 1200 ) {
+		if ( window.innerWidth > 1300 ) {
 			labelInterval = 1;
 		} else if ( window.innerWidth > 800 ) {
 			labelInterval = 2;
