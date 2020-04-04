@@ -206,9 +206,9 @@ class Chart {
 		var toolTip;
 
 		switch (countRatio) {
-				case "per1MPop": toolTip = "{name} on day {label}: {y}/1M Pop"; break;
-				case "perBed": toolTip = "{name} on day {label}: {y}/Bed"; break;
-				default: toolTip = "{name} on day {label}: {y}"; break;
+				case "per1MPop": toolTip = "{name}: " + caseType + " on day {label}: {y}/1M Pop"; break;
+				case "perBed": toolTip = "{name}: " + caseType + "  on day {label}: {y}/Bed"; break;
+				default: toolTip = "{name}: " + caseType + "  on day {label}: {y}"; break;
 			}
 
 		var data = {
