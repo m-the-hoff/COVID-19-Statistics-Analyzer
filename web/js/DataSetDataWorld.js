@@ -335,6 +335,7 @@ class DataSetDataWorld {
 		this.RegionByName = {};						// Access regions by their LocationName field
 		this.RegionByID = {};							// Access regions by their unique ID
 		this.RegionsList = [];						// Full sorted list of regions for displaying sorted lists/buttons
+		this.TotalDays = 0;
 
 		var globalFields = {
 			"id":								0,
@@ -381,6 +382,9 @@ class DataSetDataWorld {
 	}
 
 
+	getTotalDays() {
+		return this.TotalDays;
+	}
 
 	getCountryByName( countryName ) {
 		return this.GlobalRegion.getSubRegionByName( countryName );
@@ -690,6 +694,10 @@ class DataSetDataWorld {
 			counts["deaths"] 			= this.readCountSeries(byteStream);
 			counts["recovered"] 	= this.readCountSeries(byteStream);
 			counts["active"] 			= this.readCountSeries(byteStream);
+
+			if ( counts["confirmed"].length > this.TotalDays ) {
+				this.TotalDays = counts["confirmed"].length;
+			}
 
 			if (id in this.RegionByID) {
 				var region = this.RegionByID[ id ];

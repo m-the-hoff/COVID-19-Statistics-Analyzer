@@ -13,13 +13,18 @@ class Chart {
 		var isLogarithmic = chartParameters.Logarithmic;
 		var labelInterval;
 		var allChartData = [];
+		var earliestFirstDayIdx = 0;
+
+		if ( chartParameters.AlignDayZero ) {
+			earliestFirstDayIdx = this.findEarliestFirstDayIndex( regionsToShow );
+		}
 
 		for (var r = 0; r < regionsToShow.length; r++) {
-			var data = this.buildChartMetadata(caseType, regionsToShow[r], chartParameters );
+			var data = this.buildChartMetadata(caseType, regionsToShow[r], earliestFirstDayIdx, chartParameters );
 			allChartData.push(data);
 		}
 
-		var doCumulative = chartParameters.chartType != "line";
+		var doCumulative = chartParameters.ChartType != "line";
 		var maxValue = this.calculateMaximumValue(allChartData, doCumulative);
 		maxValue = 		 this.calculateChartMaxFromDataMax(maxValue);
 
@@ -95,7 +100,7 @@ class Chart {
 
 
 
-	buildChartMetadata(caseType, region, chartParameters ) {
+	buildChartMetadata(caseType, region, earliestFirstDayIdx, chartParameters ) {
 		var chartType 		= chartParameters.ChartType;
 		var delta 				= chartParameters.Delta;
 		var countRatio 		= chartParameters.CountRatio;
@@ -103,28 +108,35 @@ class Chart {
 		var isLogarithmic	= chartParameters.Logarithmic;
 
 		var dataPts = [];
-		var prevCount = 0;
 		var firstDateIndex = 0;
 		var labelName = region.getName();
+		var x = 1;
 
 		if (alignDayZero) {
 			firstDateIndex = region.getFirstNonZeroCaseIndex();
 		}
 
-		var x = 1;
+		firstDateIndex += chartParameters.StartDay;
+		x = chartParameters.StartDay + 1;
+
 		var datum;
 
 		var caseCounts = region.getCaseCountsByCaseType( caseType );
 
+
 		for (var c = firstDateIndex; c < caseCounts.length; c++ ) {
+			var prevCount = 0;
 			var count = caseCounts[c];
 			var date = this.dateToLabel( region.getNthCaseDate(c) );
 			var labelTxt = alignDayZero ? x : date;
 			var formatString = null;
 
+			if ( c ) {
+				prevCount = caseCounts[c-1]
+			}
+
 			if (delta == "deltaCount") {
 				count -= prevCount;
-				prevCount = caseCounts[c];
 			} else if (delta == "deltaPercent") {
 				if (prevCount) {
 					count = parseFloat(count - prevCount) / parseFloat(prevCount);
@@ -132,7 +144,6 @@ class Chart {
 					count = 0.0;
 				}
 
-				prevCount = caseCounts[c];
 				formatString = "0.##%";
 			}
 
@@ -167,6 +178,7 @@ class Chart {
 				"y": count
 			};
 
+
 			if (chartParameters.ShowCountryLabel && c == caseCounts.length - 1) {
 				datum.indexLabel = region.getShortestName();
 				datum.indexLabelMaxWidth = 120;
@@ -178,12 +190,12 @@ class Chart {
 
 		if (alignDayZero) {
 			// fill rest of data set w/o y values
-			for (var dk = 0; dk < firstDateIndex; dk++) {
+			for (var dk = 0; dk < firstDateIndex - earliestFirstDayIdx - chartParameters.StartDay; dk++) {
 				dataPts.push({
 					"x": x++
 				});
 			}
-		} else if ( chartParameters.ShowCountryLabel ){
+		} else if ( chartParameters.ShowCountryLabel && caseCounts.length - chartParameters.StartDay > 30){
 			// kludge to give enough space for labels
 			dataPts.push({ "x": x++, "label": " " });
 			dataPts.push({ "x": x++, "label": " " });
@@ -211,6 +223,17 @@ class Chart {
 		return data;
 	}
 
+
+	findEarliestFirstDayIndex( regionsToShow ) {
+		var earliestFirstDayIdx = 99999;
+		for (var r = 0; r < regionsToShow.length; r++) {
+			var region1stDay = regionsToShow[r].getFirstNonZeroCaseIndex();
+			if (earliestFirstDayIdx > region1stDay) {
+				earliestFirstDayIdx = region1stDay;
+			}
+		}
+		return earliestFirstDayIdx;
+	}
 
 
 	calculateMaximumValue( allRegionsData, doCumulative ) {

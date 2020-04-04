@@ -72,6 +72,16 @@
 		<span class="buttonBase button" id="deaths" onclick="gApp.setCaseType('deaths');">Deaths<div class="tooltiptext"><p>All counts are based on reported deaths.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
 		<span class="buttonBase button" id="countryLabel" onclick="gApp.toggleCountryLabel();">Chart Label<div class="tooltiptext"><p>Toggle the region name on or off at the last datapoint for each region's line, bar, or area.</p><i></i></div></span>
+		<span class="space">&nbsp;</span>
+		<span class="sliderContainer">
+			<input type="range" min="1" max="100" value="0" class="slider" id="startDay">
+			<p>1st Day: <span id="startDayValue">0</span></p>
+		</span>
+
+</body>
+</html>
+
+
 	</div>
 	<hr/>
 	<div class="sectionLabel"><span onclick="gApp.toggleSection('countryNames');"><div id="countryNamesArrow" class="downArrow"></div>Choose any combination of countries.</span><span class="sortBy">Sort by:</span>

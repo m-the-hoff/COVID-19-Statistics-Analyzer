@@ -34,7 +34,8 @@ class App {
 		this.ChartType					= null;
 		this.AlignDayZero				= null;
 		this.ShowCountryLabel		= null;
-		this.CaseType				= null;
+		this.CaseType						= null;
+		this.StartDay						= 0;
 
 		this.FirstCountry				= true;	 // first time a country is selected, "Global" is deselected
 		this.DropZoneAdded			= false;
@@ -64,6 +65,8 @@ class App {
 
 		this.DataSet.processUrl("regions", this.DataSetsPath + this.regionsUrl, regionUrlLoadingDoneFunc, loadingErrorFunc );
 	}
+
+
 
 	setupSectionPanel(sectionName ) {
 		var node = document.getElementById( sectionName );
@@ -149,7 +152,8 @@ class App {
 				"Logarithmic":			this.Logarithmic,
 				"ChartType":				this.ChartType,
 				"AlignDayZero":			this.AlignDayZero,
-				"ShowCountryLabel": this.ShowCountryLabel
+				"ShowCountryLabel": this.ShowCountryLabel,
+				"StartDay":					parseInt(this.StartDay)
 			};
 
 			var showingRegions = this.DataSet.getAllShowingRegions();
@@ -203,6 +207,10 @@ class App {
 		if (isAlignDayZero != this.AlignDayZero) {
 			this.AlignDayZero = isAlignDayZero;
 			this.toggleButtonPair("alignDayZero", "absoluteDates", isAlignDayZero);
+			if (isAlignDayZero) {
+				this.setStartDay( 0 );
+			}
+
 			this.drawChart(doDrawChart);
 		}
 	}
@@ -478,6 +486,8 @@ class App {
 		var dropZone = document.getElementById('dropZone');
 		dropZone.style.visibility = "hidden";
 
+		this.initSlider();
+
 		this.drawChart();
 	}
 
@@ -496,8 +506,44 @@ class App {
 
 
 
+	initSlider() {
+		var slider = document.getElementById("startDay");
+		var output = document.getElementById("startDayValue");
+		var appSelf = this;
+		output.innerHTML = slider.value = 0;
+
+		slider.max = this.getMaxStartDay();
+
+		slider.oninput = function() {
+		  output.innerHTML = this.value;
+			appSelf.startDayChanged( parseInt(this.value) );
+			appSelf.drawChart();
+		}
+	}
+
+
+	getMaxStartDay() {
+		return this.DataSet.getTotalDays() - 5;
+	}
+
+
+	startDayChanged( newValue ) {
+		this.StartDay = newValue;
+	}
+
+	setStartDay( startDay ) {
+		var slider = document.getElementById("startDay");
+		var output = document.getElementById("startDayValue");
+
+		slider.value = startDay;
+		output.innerHTML = startDay.toString();
+		this.StartDay = startDay;
+	}
+
 
 	initializeButtons() {
+		this.setStartDay( this.defaultInteger("day", 0, this.getMaxStartDay(), 0), false);
+
 		this.setLogarithmic( this.defaultBool("log", false), false);
 		this.setAlignDayZero(this.defaultBool("align0", false), false);
 		this.setCountryLabel(this.defaultBool("label", true), false);
@@ -527,10 +573,22 @@ class App {
 		return defaultValue;
 	}
 
+	defaultInteger(key, minValue, maxValue, defaultValue ) {
+		if (key in this.UrlParams && typeof this.UrlParams[key] !== "undefined") {
+			var value = parseInt(this.UrlParams[key]);
+			if ( value < minValue) value = minValue;
+			if ( value > maxValue) value = maxValue;
+			return value;
+		} else {
+			return defaultValue;
+		}
+	}
+
 
 	updatePageUrl( showingRegions ) {
 		var params = [];
 
+		if (this.StartDay)					params.push("day" + this.StartDay.toString() );
 		if (this.Delta)							params.push("delta");
 		if (this.Logarithmic)				params.push("log");
 		if (this.AlignDayZero)			params.push("align0");
