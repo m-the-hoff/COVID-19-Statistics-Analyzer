@@ -31,6 +31,8 @@ class Region {
 	static RecoveredAccessorFunc 	= function(a) { return a.Counts.recovered[ a.Counts.recovered.length - 1 ]; };
 	static ActiveAccessorFunc 		= function(a) { return a.Counts.active   [ a.Counts.active.length    - 1 ]; };
 
+	static Per1MPopAccessorFunc 	= function(a) { return a.Counts.confirmed   [ a.Counts.confirmed.length    - 1 ]; };
+
 	constructor( fields ) {
 
 
@@ -190,7 +192,7 @@ class Region {
 	}
 
 
-	getSubRegionsList( sortField = null ) {
+	getSubRegionsList( sortField = null, sortCaseType = null ) {
 		var regions = [];
 
 		for( var key in this.SubRegions ) {
@@ -198,7 +200,7 @@ class Region {
 		}
 
 		if ( sortField != null) {
-			Region.sortRegions( regions, sortField )
+			Region.sortRegions( regions, sortField, sortCaseType )
 		}
 
 		return regions;
@@ -289,34 +291,50 @@ class Region {
 	}
 
 
-	// sortField   "Confirmed" | "Deaths" | "Recovered" | "Active" | "Name" | "Population" | "Beds" | "PerCapita"
 
-	static sortRegions( regionList, sortField ) {
+	// caseType   "Confirmed" | "Deaths" | "Recovered" | "Active"
+	// sortField	"Count" "Name" | "Population" | "Beds" | "PerCapita"
+
+	static sortRegions( regionList, sortField, sortCaseType ) {
 		var compareFunc;
-		var accessorFunc;
+		var caseTypeAccessorFunc = Region.ConfirmedAccessorFunc;
 
-		var countCompareDescendingFunc = function(a, b) {
-				return accessorFunc(b) - accessorFunc(a);
+		var perCapitaCompareFunc = function(regionA, regionB) {
+			var valueA = parseFloat(caseTypeAccessorFunc(regionA)) / parseFloat(regionA.getPopulation());
+			var valueB = parseFloat(caseTypeAccessorFunc(regionB)) / parseFloat(regionB.getPopulation());
+			return valueB - valueA;
 		};
 
-		var strCompareFunc = function(a, b) {
-			var strA = a[sortField];
-			var strB = b[sortField];
+		var countCompareDescendingFunc = function(regionA, regionB) {
+				return caseTypeAccessorFunc(regionB) - caseTypeAccessorFunc(regionA);
+		};
+
+		var strFieldCompareFunc = function(regionA, regionB) {
+			var strA = regionA[sortField];
+			var strB = regionB[sortField];
 
 			return strA.localeCompare(strB);
 		}
 
-		compareFunc = countCompareDescendingFunc;
+		if (sortCaseType) {
+			switch( sortCaseType.toLowerCase() ) {
+				case "confirmed":		caseTypeAccessorFunc = Region.ConfirmedAccessorFunc;	break;
+				case "deaths":			caseTypeAccessorFunc = Region.DeathsAccessorFunc;			break;
+				case "recovered":		caseTypeAccessorFunc = Region.RecoveredAccessorFunc;	break;
+				case "active":			caseTypeAccessorFunc = Region.ActiveAccessorFunc;			break;
+			}
+		}
 
 		switch( sortField.toLowerCase() ) {
-			case "confirmed":		accessorFunc = Region.ConfirmedAccessorFunc;		break;
-			case "deaths":			accessorFunc = Region.DeathsAccessorFunc;				break;
-			case "recovered":		accessorFunc = Region.RecoveredAccessorFunc;		break;
-			case "active":			accessorFunc = Region.ActiveAccessorFunc;				break;
+			case "count":			compareFunc = countCompareDescendingFunc;
+												break;
 
-			case "name":	sortField = "LocationName";
-										compareFunc = strCompareFunc
-										break;
+			case "name":			sortField = "LocationName";
+												compareFunc = strFieldCompareFunc
+												break;
+
+			case "percapita": compareFunc = perCapitaCompareFunc;
+												break;
 		}
 
 		return regionList.sort(compareFunc);
@@ -391,15 +409,15 @@ class DataSetDataWorld {
 	}
 
 
-	getCountryList( sortField = null ) {
-		return this.GlobalRegion.getSubRegionsList( sortField );
+	getCountryList( sortField = null, sortCaseType = null ) {
+		return this.GlobalRegion.getSubRegionsList( sortField, sortCaseType );
 	}
 
 
-	getSubRegionsForCountry( countryName, sortField = null ) {
+	getSubRegionsForCountry( countryName, sortField = null, sortCaseType = null ) {
 		var country = this.getCountryByName( countryName );
 		if ( country ) {
-			return country.getSubRegionsList( sortField );
+			return country.getSubRegionsList( sortField, sortCaseType );
 		} else {
 			return [];
 		}
@@ -711,62 +729,6 @@ class DataSetDataWorld {
 
 
 
-
-	sortBy( field ) {
-		var sortKey;
-		var ascending = true;
-		var compareFunc;
-
-		var countCompareFunc = function(a, b) {
-			var countA;
-			var countB;
-
-			switch( sortKey ) {
-				case "confirmed":		countA = a.Counts.confirmed;
-														countB = b.Counts.confirmed;
-														break;
-
-				case "deaths":			countA = a.Counts.deaths;
-														countB = b.Counts.deaths;
-														break;
-
-				case "recovered":		countA = a.Counts.recovered;
-														countB = b.Counts.recovered;
-														break;
-
-				case "active":			countA = a.Counts.active;
-														countB = b.Counts.active;
-														break;
-
-			}
-
-			if ( ascending ) {
-				return countA - countB;
-			} else {
-				return countB - countA;
-			}
-		};
-
-		var strCompareFunc = function(a, b) {
-			var strA = a[sortKey];
-			var strB = b[sortKey];
-
-			return strA.localeCompare(strB);
-		}
-
-		switch( field ) {
-			case "Count":	sortKey = field;
-										ascending=false;
-										compareFunc = countCompareFunc;
-										break;	// key to count for most recent date
-
-			case "Name":	sortKey = "LocationName";
-										compareFunc = strCompareFunc
-										break;
-		}
-
-		this.RegionsList = this.RegionsList.sort(compareFunc);
-	}
 
 
 	calculateCountAggregates() {

@@ -241,28 +241,39 @@ class App {
 	}
 
 
-	sortBy( category, sortType ) {
-		var allowedFields = ["Count", "Name"];
-		if (allowedFields.includes(sortType) && this.DataSet ) {
-			var sortField = sortType;
+	sortBy( category, sortType, caseType = null ) {
+		var allowedSortTypes = ["Count", "Name", "PerCapita"];
 
-			if ( sortField == "Count" )
-				sortField = this.CaseType;
+		if (allowedSortTypes.includes(sortType) && this.DataSet ) {
+
+			var thisField = "sort" + category + sortType + (caseType?caseType:"");
+
+			if ( sortType == "Count" )
+				caseType = this.CaseType;
 
 			switch( category ) {
-				case "Country":	this.addCountryNameButtons(sortField);	break;
-				case "State": 	this.addStateNameButtons(sortField);		break;
+				case "Country":	this.addCountryNameButtons(sortType, caseType);	break;
+				case "State": 	this.addStateNameButtons(sortType, caseType);		break;
 			}
 
 			// disambiguate element IDs
 			var fullFields = [];
-			for( var f = 0; f < allowedFields.length; f++ ) {
-				var fullField = "sort" + category + allowedFields[f];
+
+			var fieldPrefix = "sort" + category;
+			var fieldSuffixes = [
+				"Count",
+				"Name",
+				"PerCapitaConfirmed",
+				"PerCapitaDeaths"
+			];
+
+			for( var fs = 0; fs < fieldSuffixes.length; fs++ ) {
+				var fullField = fieldPrefix + fieldSuffixes[fs];
+
 				fullFields.push( fullField );
-				if ( sortType === allowedFields[f] )  sortType = fullField;
 			}
 
-			this.toggleButtonSet(fullFields, sortType);
+			this.toggleButtonSet(fullFields, thisField);
 		}
 	}
 
@@ -300,7 +311,9 @@ class App {
 	toggleButtonSet(nodeIdList, curState) {
 		for (var i = 0; i < nodeIdList.length; i++) {
 			var node = document.getElementById(nodeIdList[i]);
-			node.className = (node.id == curState ? this.SpecialButtonSelectedClass : this.ButtonDeselectedClass);
+			if (node) {
+				node.className = (node.id == curState ? this.SpecialButtonSelectedClass : this.ButtonDeselectedClass);
+			}
 		}
 	}
 
@@ -340,7 +353,7 @@ class App {
 	}
 
 
-	addCountryNameButtons(sortField) {
+	addCountryNameButtons(sortField, sortCaseType = null) {
 		var countryContainerNode = document.getElementById("countryNames");
 
 		countryContainerNode.innerHTML = "";
@@ -356,7 +369,7 @@ class App {
 			this.createRegionButton( globalRegion );
 		}
 
-		var countries = this.DataSet.getCountryList( sortField );
+		var countries = this.DataSet.getCountryList( sortField, sortCaseType );
 
 		for (var c = 0; c < countries.length; c++) {
 			this.createRegionButton(countries[c]);
@@ -364,7 +377,7 @@ class App {
 	}
 
 
-	addStateNameButtons(sortField) {
+	addStateNameButtons(sortField, sortCaseType = null) {
 		var locsStr = "";
 
 		var stateContainerNode = document.getElementById("stateNames");
@@ -375,7 +388,7 @@ class App {
 		this.createSpecialButton( "stateNames", "All", function() { self.selectAllStates(true); } );
 		this.createSpecialButton( "stateNames", "None", function() { self.selectAllStates(false); } );
 
-		var subRegions = this.DataSet.getSubRegionsForCountry( "US", sortField );
+		var subRegions = this.DataSet.getSubRegionsForCountry( "US", sortField, sortCaseType );
 
 		for (var sr = 0; sr < subRegions.length; sr++) {
 				this.createRegionButton( subRegions[sr], true );

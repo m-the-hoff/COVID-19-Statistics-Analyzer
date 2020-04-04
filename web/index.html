@@ -86,12 +86,16 @@
 	<hr/>
 	<div class="sectionLabel"><span onclick="gApp.toggleSection('countryNames');"><div id="countryNamesArrow" class="downArrow"></div>Choose any combination of countries.</span><span class="sortBy">Sort by:</span>
 		<span class="buttonBase buttonSpecial" id="sortCountryCount" onclick="gApp.sortBy('Country','Count');">Count</span>
-		<span class="buttonBase" id="sortCountryName" onclick="gApp.sortBy('Country','Name');">Name</span></div>
+		<span class="buttonBase" id="sortCountryName" onclick="gApp.sortBy('Country','Name');">Name</span>
+		<span class="buttonBase" id="sortCountryPerCapitaConfirmed" onclick="gApp.sortBy('Country','PerCapita', 'Confirmed');">Confirmed/Capita</span>
+		<span class="buttonBase" id="sortCountryPerCapitaDeaths" onclick="gApp.sortBy('Country','PerCapita', 'Deaths');">Deaths/Capita</span></div>
 		<div class="section" id="countryNames"></div>
 	<hr/>
 	<div class="sectionLabel"><span onclick="gApp.toggleSection('stateNames');"><div id="stateNamesArrow" class="downArrow"></div>Choose any combination of US states and regions.</span><span class="sortBy">Sort by:</span>
 		<span class="buttonBase buttonSpecial" id="sortStateCount" onclick="gApp.sortBy('State','Count');">Count</span>
-		<span class="buttonBase" id="sortStateName" onclick="gApp.sortBy('State','Name');">Name</span></div>
+		<span class="buttonBase" id="sortStateName" onclick="gApp.sortBy('State','Name');">Name</span>
+		<span class="buttonBase" id="sortStatePerCapitaConfirmed" onclick="gApp.sortBy('State','PerCapita', 'Confirmed');">Confirmed/Capita</span>
+		<span class="buttonBase" id="sortStatePerCapitaDeaths" onclick="gApp.sortBy('State','PerCapita', 'Deaths');">Deaths/Capita</span></div>
 		<div class="section" id="stateNames"></div>
 
 	<hr/>

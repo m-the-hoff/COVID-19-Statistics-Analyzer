@@ -73,6 +73,7 @@ class Chart {
 				fontSize: 18
 			},
 			axisY: {
+				minimum:						0,
 				maximum:						maxValue,
 				includeZero: 				true,
 				logarithmic: 				isLogarithmic,
