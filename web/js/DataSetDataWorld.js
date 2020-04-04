@@ -22,16 +22,20 @@
 **************************************************/
 
 
+gRegion_ConfirmedAccessorFunc 	= function(a) { return a.Counts.confirmed[ a.Counts.confirmed.length - 1 ]; };
+gRegion_DeathsAccessorFunc 			= function(a) { return a.Counts.deaths   [ a.Counts.deaths.length    - 1 ]; };
+gRegion_RecoveredAccessorFunc 	= function(a) { return a.Counts.recovered[ a.Counts.recovered.length - 1 ]; };
+gRegion_ActiveAccessorFunc 			= function(a) { return a.Counts.active   [ a.Counts.active.length    - 1 ]; };
 
 
 class Region {
 	// used for getting to correct data for sorting comparision
+	/******** ONLY WORKS IN CHROME
 	static ConfirmedAccessorFunc 	= function(a) { return a.Counts.confirmed[ a.Counts.confirmed.length - 1 ]; };
 	static DeathsAccessorFunc 		= function(a) { return a.Counts.deaths   [ a.Counts.deaths.length    - 1 ]; };
 	static RecoveredAccessorFunc 	= function(a) { return a.Counts.recovered[ a.Counts.recovered.length - 1 ]; };
 	static ActiveAccessorFunc 		= function(a) { return a.Counts.active   [ a.Counts.active.length    - 1 ]; };
-
-	static Per1MPopAccessorFunc 	= function(a) { return a.Counts.confirmed   [ a.Counts.confirmed.length    - 1 ]; };
+	********/
 
 	constructor( fields ) {
 
@@ -297,7 +301,7 @@ class Region {
 
 	static sortRegions( regionList, sortField, sortCaseType ) {
 		var compareFunc;
-		var caseTypeAccessorFunc = Region.ConfirmedAccessorFunc;
+		var caseTypeAccessorFunc = gRegion_ConfirmedAccessorFunc;
 
 		var perCapitaCompareFunc = function(regionA, regionB) {
 			var valueA = parseFloat(caseTypeAccessorFunc(regionA)) / parseFloat(regionA.getPopulation());
@@ -318,10 +322,10 @@ class Region {
 
 		if (sortCaseType) {
 			switch( sortCaseType.toLowerCase() ) {
-				case "confirmed":		caseTypeAccessorFunc = Region.ConfirmedAccessorFunc;	break;
-				case "deaths":			caseTypeAccessorFunc = Region.DeathsAccessorFunc;			break;
-				case "recovered":		caseTypeAccessorFunc = Region.RecoveredAccessorFunc;	break;
-				case "active":			caseTypeAccessorFunc = Region.ActiveAccessorFunc;			break;
+				case "confirmed":		caseTypeAccessorFunc = gRegion_ConfirmedAccessorFunc;	break;
+				case "deaths":			caseTypeAccessorFunc = gRegion_DeathsAccessorFunc;			break;
+				case "recovered":		caseTypeAccessorFunc = gRegion_RecoveredAccessorFunc;	break;
+				case "active":			caseTypeAccessorFunc = gRegion_ActiveAccessorFunc;			break;
 			}
 		}
 
