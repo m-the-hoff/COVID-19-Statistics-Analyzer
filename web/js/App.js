@@ -6,13 +6,8 @@
 **
 ** TODO
 **
-**	- Disambiguate when provinces from different countries are same name, like "Diamond Princess"
-**			Make sure this fixes duplicated entry in US States
-**			and fixes split country for Diamond Princess
-**	- Only turn "Global" line on when no countries OR states are selected
-**	- Add "per beds" capability
-**	- Ability to sort countries and states
-**	- Fix missing gPopulationLookup and bed counts
+**	- add tooltips for sliders
+**	- Fix missing population and bed counts (ongoing)
 **
 **
 ****************************************/
@@ -635,8 +630,8 @@ class App {
 		if (this.AlignDayZero)			params.push("align0");
 		if (this.ShowCountryLabel)	params.push("label");
 
-		if (this.StartDay)					params.push("day=" + this.StartDay.toString() );
-		if (this.Smooth)						params.push("smooth=" + this.Smooth.toString() );
+		if (parseInt(this.StartDay))					params.push("day=" + this.StartDay.toString() );
+		if (parseInt(this.Smooth))						params.push("smooth=" + this.Smooth.toString() );
 
 		params.push("delta=" + this.Delta);
 		params.push("ratio=" + this.CountRatio);
