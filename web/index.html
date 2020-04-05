@@ -57,9 +57,10 @@
 		<span class="buttonBase button" id="stackedColumn" onclick="gApp.setChartType('stackedColumn');">Bar<div class="tooltiptext"><p>Region values for each day are shown as stacked bars.</p><i></i></div></span>
 		<span class="buttonBase button" id="stackedArea" onclick="gApp.setChartType('stackedArea');">Stacked<div class="tooltiptext"><p>Region values are shown as cumulative, stacked areas. Note that when aligning day zeroes, any non-existent data points cause anomalies in this mode.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="cumulative" onclick="gApp.setDelta('cumulative');">Cumulative<div class="tooltiptext"><p>Each day shows the total cumulative counts for each region.</p><i></i></div></span>
-		<span class="buttonBase button" id="deltaCount" onclick="gApp.setDelta('deltaCount');">Daily &#x394;<div class="tooltiptext"><p>Each day shows the amount of increase or decrease in count compared to the previous day, for each region.</p><i></i></div></span>
-		<span class="buttonBase button" id="deltaPercent" onclick="gApp.setDelta('deltaPercent');">Daily &#x394;%<div class="tooltiptext"><p>Each day shows the amount of increase or decrease compared to the previous day as a percentage of the total, for each region.</p><i></i></div></span>
+		<span class="buttonBase button" id="cumulative" onclick="gApp.setDelta('cumulative');">Cumulative<div class="tooltiptext"><p>Each day shows the total cumulative count for each region.</p><i></i></div></span>
+		<span class="buttonBase button" id="deltaCount" onclick="gApp.setDelta('deltaCount');">Daily &#x394;<div class="tooltiptext"><p>Each day shows the increase or decrease in total count (aka delta, &#x394;, or first derivative) compared to the prior day, for each region.</p><i></i></div></span>
+		<span class="buttonBase button" id="deltaDeltaCount" onclick="gApp.setDelta('deltaDeltaCount');">Daily &#x394;&#x394;<div class="tooltiptext"><p>Each day shows acceleration or deceleration of change in the total count((aka delta of the delta, &#x394;&#x394;, or second derivative)), for each region.</p><i></i></div></span>
+		<span class="buttonBase button" id="deltaPercent" onclick="gApp.setDelta('deltaPercent');">Daily &#x394;%<div class="tooltiptext"><p>Each day shows the % increase or decrease of the total count, for each region.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
 		<span class="buttonBase button" id="absolute" onclick="gApp.setCountRatio('absolute');">Count<div class="tooltiptext"><p>Numbers shown are the actual # of cases/deaths for that region.</p><i></i></div></span>
 		<span class="buttonBase button" id="per1MPop" onclick="gApp.setCountRatio('per1MPop');">Per 1M Pop<div class="tooltiptext"><p>Numbers shown are the # of cases/deaths per 1M people living in that region.</p><i></i></div></span>
@@ -71,11 +72,15 @@
 		<span class="buttonBase button" id="confirmed" onclick="gApp.setCaseType('confirmed');">Confirmed<div class="tooltiptext"><p>All counts are based on reported confirmed cases.</p><i></i></div></span>
 		<span class="buttonBase button" id="deaths" onclick="gApp.setCaseType('deaths');">Deaths<div class="tooltiptext"><p>All counts are based on reported deaths.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
-		<span class="buttonBase button" id="countryLabel" onclick="gApp.toggleCountryLabel();">Chart Label<div class="tooltiptext"><p>Toggle the region name on or off at the last datapoint for each region's line, bar, or area.</p><i></i></div></span>
+		<span class="buttonBase button" id="countryLabel" onclick="gApp.toggleCountryLabel();">Label<div class="tooltiptext"><p>Toggle the region name on or off at the last datapoint for each region's line, bar, or area.</p><i></i></div></span>
 		<span class="space">&nbsp;</span>
 		<span class="sliderContainer">
 			<input type="range" min="1" max="100" value="0" class="slider" id="startDay">
 			<p>1st Day: <span id="startDayValue">0</span></p>
+		</span>
+		<span class="sliderContainer">
+			<input type="range" min="1" max="20" value="0" class="slider" id="smooth">
+			<p>Smoothing samples: <span id="smoothValue">0</span></p>
 		</span>
 
 </body>

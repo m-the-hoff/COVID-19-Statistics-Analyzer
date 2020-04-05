@@ -43,9 +43,10 @@ class Chart {
 		};
 
 		var deltaToTitle = {
-			"cumulative":			" Cumulative Total",
-			"deltaCount":			" Daily Deltas",
-			"deltaPercent":		" Daily % Deltas"
+			"cumulative":				" Cumulative Total",
+			"deltaCount":				" Daily Deltas (&#x394;)",
+			"deltaDeltaCount":	" Daily Acceleration (&#x394;&#x394;)",
+			"deltaPercent":			" Daily Delta %"
 		};
 
 		var titleName = dateSetTypeToTitle[caseType];
@@ -73,7 +74,6 @@ class Chart {
 				fontSize: 18
 			},
 			axisY: {
-				minimum:						0,
 				maximum:						maxValue,
 				includeZero: 				true,
 				logarithmic: 				isLogarithmic,
@@ -107,6 +107,7 @@ class Chart {
 		var countRatio 		= chartParameters.CountRatio;
 		var alignDayZero 	= chartParameters.AlignDayZero;
 		var isLogarithmic	= chartParameters.Logarithmic;
+		var smoothSize 		= chartParameters.Smooth;
 
 		var dataPts = [];
 		var firstDateIndex = 0;
@@ -124,29 +125,61 @@ class Chart {
 
 		var caseCounts = region.getCaseCountsByCaseType( caseType );
 
+		if (smoothSize) {
+			caseCounts = this.calcMovingAverage( caseCounts, smoothSize );
+		}
 
 		for (var c = firstDateIndex; c < caseCounts.length; c++ ) {
 			var prevCount = 0;
-			var count = caseCounts[c];
+			var prevDelta = 0;
+			var count = 0;
 			var date = this.dateToLabel( region.getNthCaseDate(c) );
 			var labelTxt = alignDayZero ? x : date;
 			var formatString = null;
+			var deltaTminus1 = 0;
+			var deltaTminus2 = 0;
+			var deltaTitle;
 
-			if ( c ) {
-				prevCount = caseCounts[c-1]
+			if ( c >= 1 ) {
+				deltaTminus1 = caseCounts[c] - caseCounts[c-1];
+			}
+			if ( c >= 2 ) {
+				deltaTminus2 = caseCounts[c-1] - caseCounts[c-2];
 			}
 
-			if (delta == "deltaCount") {
-				count -= prevCount;
-			} else if (delta == "deltaPercent") {
-				if (prevCount) {
-					count = parseFloat(count - prevCount) / parseFloat(prevCount);
-				} else {
+			switch( delta ) {
+				case "cumulative":
+					count = caseCounts[c];
+					deltaTitle = "Total";
+					break;
+
+				case "deltaCount":
+					count = deltaTminus1;
+					deltaTitle = "&#x394;";
+					break;
+
+				case "deltaDeltaCount":
+					count = deltaTminus1 - deltaTminus2;
+					deltaTitle = "&#x394;&#x394;";
+					break;
+
+				case "deltaPercent":
+					var prevCount = caseCounts[c] - deltaTminus1;
+					if (prevCount) {
+						count = parseFloat(deltaTminus1) / parseFloat(prevCount);
+					} else {
+						count = 0.0;
+					}
+					formatString = "0.##%";
+					deltaTitle = "&#x394;%";
+					break;
+
+				default:
 					count = 0.0;
-				}
-
-				formatString = "0.##%";
+					deltaTitle = "Total ";
+					break;
 			}
+
 
 			if (countRatio == "per1MPop") {
 				count = 1000000 * parseFloat(count) / parseFloat(region.getPopulation() );
@@ -206,9 +239,9 @@ class Chart {
 		var toolTip;
 
 		switch (countRatio) {
-				case "per1MPop": toolTip = "{name}: " + caseType + " on day {label}: {y}/1M Pop"; break;
-				case "perBed": toolTip = "{name}: " + caseType + "  on day {label}: {y}/Bed"; break;
-				default: toolTip = "{name}: " + caseType + "  on day {label}: {y}"; break;
+				case "per1MPop":	toolTip = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}/1M Pop"; break;
+				case "perBed": 		toolTip = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}/Bed"; 		break;
+				default: 					toolTip = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}"; 				break;
 			}
 
 		var data = {
@@ -216,7 +249,7 @@ class Chart {
 			name: labelName,
 			toolTipContent: toolTip,
 			showInLegend: true,
-			type: chartType,
+			type: chartType == "line" ? "spline" : chartType,
 			dataPoints: dataPts,
 			markerSize: 4
 		};
@@ -224,6 +257,24 @@ class Chart {
 		return data;
 	}
 
+	calcMovingAverage(data, size) {
+		var outData = [];
+
+		for( var i = 0; i < data.length; i++ ) {
+			var halfSize = size >> 1;
+			if (halfSize > i ) halfSize = i;
+			if (halfSize > data.length - i - 1) halfSize = data.length - i - 1;
+
+			var sum = 0;
+			for( var a = i - halfSize; a <= i + halfSize; a++) {
+				sum += data[a];
+			}
+			var avg = sum / (halfSize * 2 + 1);
+			outData.push( avg );
+		}
+
+		return outData;
+	}
 
 	findEarliestFirstDayIndex( regionsToShow ) {
 		var earliestFirstDayIdx = 99999;

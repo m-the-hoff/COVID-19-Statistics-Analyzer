@@ -159,7 +159,8 @@ class App {
 				"ChartType":				this.ChartType,
 				"AlignDayZero":			this.AlignDayZero,
 				"ShowCountryLabel": this.ShowCountryLabel,
-				"StartDay":					parseInt(this.StartDay)
+				"StartDay":					parseInt(this.StartDay),
+				"Smooth":						parseInt(this.Smooth)
 			};
 
 			var showingRegions = this.DataSet.getAllShowingRegions();
@@ -285,13 +286,12 @@ class App {
 
 
 	setDelta(deltaType, doDrawChart = true) {
-		var allowedTypes = ["cumulative", "deltaCount", "deltaPercent"];
+		var allowedTypes = ["cumulative", "deltaCount", "deltaDeltaCount", "deltaPercent"];
 		if (allowedTypes.includes(deltaType) && deltaType != this.Delta) {
 			this.Delta = deltaType;
 			this.toggleButtonSet(allowedTypes, deltaType)
 			if (deltaType != "cumulative") {
 				this.setCountRatio("absolute", false);
-				this.setChartType("stackedColumn", false);
 			}
 			this.drawChart(doDrawChart);
 		}
@@ -505,7 +505,12 @@ class App {
 		var dropZone = document.getElementById('dropZone');
 		dropZone.style.visibility = "hidden";
 
-		this.initSlider();
+		this.setStartDay( this.defaultInteger("day", 0, this.getMaxStartDay(), 0), false);
+		this.setStartDay( this.defaultInteger("smooth", 0, this.getMaxSmooth(), 0), false);
+
+		this.initSlider( "startDay", this.getMaxStartDay(), this.startDayChanged.bind(this) );
+		this.initSlider( "smooth", this.getMaxSmooth(), this.smoothChanged.bind(this) );
+
 
 		this.drawChart();
 	}
@@ -525,19 +530,29 @@ class App {
 
 
 
-	initSlider() {
-		var slider = document.getElementById("startDay");
-		var output = document.getElementById("startDayValue");
-		var appSelf = this;
-		output.innerHTML = slider.value = 0;
+	initSlider( name, max, changedFunc ) {
+		var slider = document.getElementById(name);
+		var output = document.getElementById(name + "Value");
+		output.innerHTML = slider.value;
 
-		slider.max = this.getMaxStartDay();
+		slider.max = max;
+		slider.min = 0;
 
 		slider.oninput = function() {
 		  output.innerHTML = this.value;
-			appSelf.startDayChanged( parseInt(this.value) );
-			appSelf.drawChart();
+			changedFunc( parseInt(this.value) );
 		}
+	}
+
+
+	smoothChanged( newValue ) {
+		this.Smooth = newValue;
+		this.drawChart();
+	}
+
+	setSmooth( smooth ) {
+		this.setSlider( "smooth", smooth );
+		this.Smooth = smooth;
 	}
 
 
@@ -545,23 +560,32 @@ class App {
 		return this.DataSet.getTotalDays() - 5;
 	}
 
+	getMaxSmooth() {
+		return 15;
+	}
 
 	startDayChanged( newValue ) {
 		this.StartDay = newValue;
+		this.drawChart();
 	}
 
 	setStartDay( startDay ) {
-		var slider = document.getElementById("startDay");
-		var output = document.getElementById("startDayValue");
-
-		slider.value = startDay;
-		output.innerHTML = startDay.toString();
+		this.setSlider( "startDay", startDay );
 		this.StartDay = startDay;
 	}
 
+	setSlider( name, value ) {
+		var slider = document.getElementById(name);
+		var output = document.getElementById(name + "Value");
+
+		slider.value = value;
+		output.innerHTML = value.toString();
+
+	}
 
 	initializeButtons() {
 		this.setStartDay( this.defaultInteger("day", 0, this.getMaxStartDay(), 0), false);
+		this.setSmooth( this.defaultInteger("smooth", 0, this.getMaxSmooth(), 0), false);
 
 		this.setLogarithmic( this.defaultBool("log", false), false);
 		this.setAlignDayZero(this.defaultBool("align0", false), false);
@@ -607,12 +631,14 @@ class App {
 	updatePageUrl( showingRegions ) {
 		var params = [];
 
-		if (this.StartDay)					params.push("day" + this.StartDay.toString() );
-		if (this.Delta)							params.push("delta");
 		if (this.Logarithmic)				params.push("log");
 		if (this.AlignDayZero)			params.push("align0");
 		if (this.ShowCountryLabel)	params.push("label");
 
+		if (this.StartDay)					params.push("day=" + this.StartDay.toString() );
+		if (this.Smooth)						params.push("smooth=" + this.Smooth.toString() );
+
+		params.push("delta=" + this.Delta);
 		params.push("ratio=" + this.CountRatio);
 		params.push("chart=" + this.ChartType);
 		params.push("type=" + this.CaseType);
