@@ -263,8 +263,8 @@ def fixMissingCounts():
 def fixMissingCountsForCase( region, caseType ):
 	if caseType in region["cases"] and region["identity"]["regionLevel3"] != "Unassigned":
 		caseCounts = region["cases"][caseType]
-		lastDate = gSortedDates[ len(gSortedDates) - 1 ]
-
+		#len(gSortedDates):
+		#lastDate = gSortedDates[ len(gSortedDates) - 1 ]
 		# These are not actually errors, they are just late reported data.
 		#if lastDate in caseCounts:
 		#	if caseCounts[ lastDate ] == '':

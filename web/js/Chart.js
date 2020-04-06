@@ -126,7 +126,7 @@ class Chart {
 		var caseCounts = region.getCaseCountsByCaseType( caseType );
 
 		if (smoothSize) {
-			caseCounts = this.calcMovingAverage( caseCounts, smoothSize );
+			caseCounts = this.calcMovingAverageRMS( caseCounts, smoothSize );
 		}
 
 		for (var c = firstDateIndex; c < caseCounts.length; c++ ) {
@@ -256,6 +256,29 @@ class Chart {
 
 		return data;
 	}
+
+
+	calcMovingAverageRMS(data, size) {
+		var outData = [];
+
+		for( var i = 0; i < data.length; i++ ) {
+			var halfSize = size >> 1;
+			if (halfSize > i ) halfSize = i;
+			if (halfSize > data.length - i - 1) halfSize = data.length - i - 1;
+
+			var sum = 0;
+			for( var a = i - halfSize; a <= i + halfSize; a++) {
+				sum += data[a] * data[a];
+			}
+
+			var rmsAvg = Math.sqrt( sum / (halfSize * 2 + 1) );
+
+			outData.push( rmsAvg );
+		}
+
+		return outData;
+	}
+
 
 	calcMovingAverage(data, size) {
 		var outData = [];
