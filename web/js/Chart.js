@@ -126,7 +126,7 @@ class Chart {
 		var caseCounts = region.getCaseCountsByCaseType( caseType );
 
 		if (smoothSize) {
-			caseCounts = this.calcMovingAverageRMS( caseCounts, smoothSize );
+			caseCounts = this.calcMovingAverageTrailing( caseCounts, smoothSize );
 		}
 
 		for (var c = firstDateIndex; c < caseCounts.length; c++ ) {
@@ -280,7 +280,7 @@ class Chart {
 	}
 
 
-	calcMovingAverage(data, size) {
+	calcMovingAverage(data, size ) {
 		var outData = [];
 
 		for( var i = 0; i < data.length; i++ ) {
@@ -298,6 +298,27 @@ class Chart {
 
 		return outData;
 	}
+
+
+	calcMovingAverageTrailing(data, maxSize ) {
+		var outData = [];
+		var size = maxSize;
+
+		for( var i = 0; i < data.length; i++ ) {
+			size = maxSize;
+			if (size > i ) size = i;
+
+			var sum = 0;
+			for( var a = i - size; a <= i; a++) {
+				sum += data[a];
+			}
+			var avg = sum / (size+1);
+			outData.push( avg );
+		}
+
+		return outData;
+	}
+
 
 	findEarliestFirstDayIndex( regionsToShow ) {
 		var earliestFirstDayIdx = 99999;

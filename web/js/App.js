@@ -32,6 +32,7 @@ class App {
 		this.CaseType						= null;
 		this.StartDay						= 0;
 
+		this.DefaultSmooth			= 4;
 		this.FirstCountry				= true;	 // first time a country is selected, "Global" is deselected
 		this.DropZoneAdded			= false;
 		this.ButtonDeselectedClass					= "buttonBase button";
@@ -500,12 +501,11 @@ class App {
 		var dropZone = document.getElementById('dropZone');
 		dropZone.style.visibility = "hidden";
 
-		this.setStartDay( this.defaultInteger("day", 0, this.getMaxStartDay(), 0), false);
-		this.setStartDay( this.defaultInteger("smooth", 0, this.getMaxSmooth(), 0), false);
-
 		this.initSlider( "startDay", this.getMaxStartDay(), this.startDayChanged.bind(this) );
 		this.initSlider( "smooth", this.getMaxSmooth(), this.smoothChanged.bind(this) );
 
+		this.setStartDay( this.defaultInteger("day", 0, this.getMaxStartDay(), 0), false);
+		this.setSmooth( this.defaultInteger("smooth", 0, this.getMaxSmooth(), this.DefaultSmooth), false);
 
 		this.drawChart();
 	}

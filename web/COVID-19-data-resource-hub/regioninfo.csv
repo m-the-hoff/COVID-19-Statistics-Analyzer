@@ -3559,3 +3559,6 @@ id,regionLevel,regionLevel1,regionLevel2,regionLevel3,regionType,locationName,al
 3558,3,US,Florida,Out of FL,county,"Out of FL, Florida, US",,0,0,80012
 3559,3,US,Wyoming,Unassigned,county,"Unassigned, Wyoming, US",,0,0,90056
 3560,3,US,New York,New York,county,"New York, New York, US",,40.7672726,-73.97152637,36061
+3561,1,Western Sahara,,,country,Western Sahara,,-12.8858,24.2155,
+3562,1,South Sudan,,,country,South Sudan,,31.307,6.877,
+3563,2,France,Saint Pierre and Miquelon,,province,"Saint Pierre and Miquelon, France",,-56.3159,46.8852,

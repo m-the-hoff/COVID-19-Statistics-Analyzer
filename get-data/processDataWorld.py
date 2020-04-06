@@ -273,12 +273,18 @@ def fixMissingCountsForCase( region, caseType ):
 		#	print("missing last date: ", lastDate, region["identity"]["locationName"], caseType )
 
 
-def processDataWorldQuery(dataWorldUrl):
+def processDataWorldQuery(dataWorldUrl, localFilePath = None ):
 
 	print("Processing cases data directly from data.world" )
 
 	response = requests.get(url = dataWorldUrl, params = {})
 	csvText = response.text
+
+	if localFilePath:
+		f = open( localFilePath, "w" )
+		f.write( csvText)
+		f.close()
+
 	csvLines = csvText.split('\n')
 	processCasesCSV( csvLines )
 
@@ -526,7 +532,7 @@ def processAllData():
 		if len(sys.argv) == 2:
 			processCasesCSVFile(dataWorldCases)
 		else:
-			processDataWorldQuery(dataWorldQueryURL)
+			processDataWorldQuery(dataWorldQueryURL, dataWorldCases)
 
 		exportRegionCSV(regionInfoOut)
 		exportCaseData(caseDataOut)
