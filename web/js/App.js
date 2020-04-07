@@ -160,7 +160,7 @@ class App {
 			};
 
 			var showingRegions = this.DataSet.getAllShowingRegions();
-			showingRegions = Region.sortRegions( showingRegions, this.CaseType );
+			showingRegions = Region.sortRegions( showingRegions, "Count", this.CaseType );
 
 			this.currentChartTitle = this.Chart.drawChart(this.CaseType, showingRegions, chartParameters);
 			this.updatePageUrl( showingRegions );	// if we need to update chart, we also need to update the url (for sharing)
@@ -286,8 +286,9 @@ class App {
 		if (allowedTypes.includes(deltaType) && deltaType != this.Delta) {
 			this.Delta = deltaType;
 			this.toggleButtonSet(allowedTypes, deltaType)
-			if (deltaType != "cumulative") {
+			if (deltaType == "deltaDeltaCount" ) {
 				this.setCountRatio("absolute", false);
+				this.setLogarithmic(false, false);
 			}
 			this.drawChart(doDrawChart);
 		}
@@ -298,6 +299,9 @@ class App {
 		if (isLog != this.Logarithmic) {
 			this.Logarithmic = isLog;
 			this.toggleButtonPair("logarithmic", "linear", isLog);
+			if (isLog && this.deltaType == "deltaDeltaCount") {
+				this.setDelta("cumulative", false);
+			}
 			this.drawChart(doDrawChart);
 		}
 	}

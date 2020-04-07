@@ -28,6 +28,10 @@ class Chart {
 		var maxValue = this.calculateMaximumValue(allChartData, doCumulative);
 		maxValue = 		 this.calculateChartMaxFromDataMax(maxValue);
 
+		if (isLogarithmic) {
+			maxValue = Math.pow(10, Math.ceil( Math.log10(maxValue) ) );
+		}
+
 		var dateSetTypeToTitle = {
 			"confirmed":	"COVID-19 Confirmed Cases by Country",
 			"deaths":			"COVID-19 Deaths by Country",
