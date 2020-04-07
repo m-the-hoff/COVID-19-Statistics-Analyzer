@@ -44,8 +44,8 @@ class Chart {
 
 		var deltaToTitle = {
 			"cumulative":				" Cumulative Total",
-			"deltaCount":				" Daily Deltas (&#x394;)",
-			"deltaDeltaCount":	" Daily Acceleration (&#x394;&#x394;)",
+			"deltaCount":				" Daily Deltas (\u0394)",
+			"deltaDeltaCount":	" Daily Acceleration (\u0394\u0394)",
 			"deltaPercent":			" Daily Delta %"
 		};
 
@@ -155,12 +155,12 @@ class Chart {
 
 				case "deltaCount":
 					count = deltaTminus1;
-					deltaTitle = "&#x394;";
+					deltaTitle = "\u0394";
 					break;
 
 				case "deltaDeltaCount":
 					count = deltaTminus1 - deltaTminus2;
-					deltaTitle = "&#x394;&#x394;";
+					deltaTitle = "\u0394\u0394";
 					break;
 
 				case "deltaPercent":
@@ -171,7 +171,7 @@ class Chart {
 						count = 0.0;
 					}
 					formatString = "0.##%";
-					deltaTitle = "&#x394;%";
+					deltaTitle = "\u0394";
 					break;
 
 				default:
