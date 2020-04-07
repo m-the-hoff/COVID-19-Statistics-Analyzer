@@ -125,7 +125,7 @@ class Chart {
 
 		var caseCounts = region.getCaseCountsByCaseType( caseType );
 
-		if (smoothSize) {
+		if (smoothSize > 1) {
 			caseCounts = this.calcMovingAverageTrailing( caseCounts, smoothSize );
 		}
 
@@ -244,6 +244,10 @@ class Chart {
 				default: 					toolTip = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}"; 				break;
 			}
 
+		if ( smoothSize > 1 ) {
+			toolTip += " (" + smoothSize.toString() + " pt moving avg)";
+		}
+
 		var data = {
 			indexLabelFontSize: 9,
 			name: labelName,
@@ -260,7 +264,7 @@ class Chart {
 
 	calcMovingAverageRMS(data, size) {
 		var outData = [];
-
+		size--;		// change from 1 based to 0 based
 		for( var i = 0; i < data.length; i++ ) {
 			var halfSize = size >> 1;
 			if (halfSize > i ) halfSize = i;
@@ -282,6 +286,7 @@ class Chart {
 
 	calcMovingAverage(data, size ) {
 		var outData = [];
+		size--;		// change from 1 based to 0 based
 
 		for( var i = 0; i < data.length; i++ ) {
 			var halfSize = size >> 1;
@@ -302,7 +307,7 @@ class Chart {
 
 	calcMovingAverageTrailing(data, maxSize ) {
 		var outData = [];
-		var size = maxSize;
+		var size = --maxSize;
 
 		for( var i = 0; i < data.length; i++ ) {
 			size = maxSize;

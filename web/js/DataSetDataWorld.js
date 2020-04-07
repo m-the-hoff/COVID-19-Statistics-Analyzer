@@ -34,7 +34,7 @@ class Region {
 	static ConfirmedAccessorFunc 	= function(a) { return a.Counts.confirmed[ a.Counts.confirmed.length - 1 ]; };
 	static DeathsAccessorFunc 		= function(a) { return a.Counts.deaths   [ a.Counts.deaths.length    - 1 ]; };
 	static RecoveredAccessorFunc 	= function(a) { return a.Counts.recovered[ a.Counts.recovered.length - 1 ]; };
-	static ActiveAccessorFunc 		= function(a) { return a.Counts.active   [ a.Counts.active.length    - 1 ]; };
+	static ActiveAccessorFunc 		= function(a) { return a.Counts.active   [ a.Counts.active.length- 1 ]; };
 	********/
 
 	constructor( fields ) {
@@ -52,6 +52,8 @@ class Region {
 		this.Showing				= false;
 		this.BaseDate				= new Date(2020, 1, 22, 0, 0, 0, 0);	// base date is always 2020-01-22
 		this.FirstNonZeroIndex = null;
+		this.Population			= 0;
+		this.Beds						= 0;
 
 		if (this.Level < 2 || this.Type == "state") {
 			this.Population			= this.lookupPopulation();

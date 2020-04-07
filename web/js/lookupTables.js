@@ -208,6 +208,7 @@ var gPopulationLookup = {
 	"Germany": 83783942,
 	"Ghana": 31072940,
 	"Gibraltar": 33691,
+	"Global": 7776100000,
 	"Grand Princess": 3533,
 	"Greece": 10423054,
 	"Greenland": 56770,

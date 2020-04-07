@@ -32,8 +32,8 @@ class App {
 		this.CaseType						= null;
 		this.StartDay						= 0;
 
-		this.DefaultSmooth			= 4;
-		this.FirstCountry				= true;	 // first time a country is selected, "Global" is deselected
+		this.DefaultSmooth			= 1;
+		this.FirstRegion				= true;	 // first time a region is selected, "Global" is deselected
 		this.DropZoneAdded			= false;
 		this.ButtonDeselectedClass					= "buttonBase button";
 		this.RegionButtonSelectedClass	= "buttonBase buttonSelected";
@@ -410,10 +410,11 @@ class App {
 	}
 
 
+
 	createRegionButton( region, isAState = false ) {
 		var locName = region.getName();
 		var containerNode;
-		var countryEle = document.createElement("span");
+		var regionEle = document.createElement("span");
 		var self = this;
 		var label = locName;
 
@@ -426,20 +427,80 @@ class App {
 
 		label = label.replace(" ", "&nbsp;");
 
+		var templateHtml = '{label}<div class="tooltiptext"><table>'
+			+ '<tr><td>Region:</td><td>{name}</td></tr>'
+			+ '<tr><td>Population:</td><td>{population}</td></tr>'
+			+ '<tr><td>Beds/1K:</td><td>{beds}</td></tr>'
+			+ '<tr><td>Confirmed:</td><td>{confirmed}</td></tr>'
+			+ '<tr><td></td><td>{confirmedPerM}/1M Pop</td></tr>'
+			+ '<tr><td>Deaths:</td><td>{deaths}</td></tr>'
+			+ '<tr><td></td><td>{deathsPerM}/1M Pop</td></tr>'
+		  + '</table><i></i></div>';
+
+		var confirmed 			= region.getLatestCount("confirmed");
+		var deaths 					= region.getLatestCount("deaths");
+		var population 			= region.getPopulation();
+		var confirmedPer1M 	= 1000000.0 * parseFloat(confirmed) / parseFloat(population);
+		var deathsPer1M 		= 1000000.0 * parseFloat(deaths)    / parseFloat(population);
+		var bedsPer1K				= region.getBeds() * 1000.0 / population;
+
+		templateHtml = templateHtml.replace("{label}", 					label );
+		templateHtml = templateHtml.replace("{name}", 					region.getName() );
+		templateHtml = templateHtml.replace("{population}", 		this.numberFormatter( population, 		2) );
+		templateHtml = templateHtml.replace("{beds}", 					this.numberFormatter( bedsPer1K, 			1) );
+		templateHtml = templateHtml.replace("{confirmed}", 			this.numberFormatter( confirmed, 			2) );
+		templateHtml = templateHtml.replace("{confirmedPerM}",	this.numberFormatter( confirmedPer1M,	2) );
+		templateHtml = templateHtml.replace("{deaths}", 				this.numberFormatter( deaths, 				2) );
+		templateHtml = templateHtml.replace("{deathsPerM}", 		this.numberFormatter( deathsPer1M,		2) );
+
 		var clickFunc = function() {
-			if ( !region.isShowing() && self.FirstCountry ) {
+			if ( !region.isShowing() && self.FirstRegion ) {
 				self.setLocationState("Global", false, false );
-				this.FirstCountry = false;
+				this.FirstRegion = false;
 			}
 			self.toggleLocation(locName);
 
 		}
 
-		countryEle.className = region.isShowing() ? this.RegionButtonSelectedClass : this.ButtonDeselectedClass;
-		countryEle.id = locName;
-		countryEle.onclick = clickFunc;
-		countryEle.innerHTML = label;
-		containerNode.appendChild(countryEle);
+		regionEle.className = region.isShowing() ? this.RegionButtonSelectedClass : this.ButtonDeselectedClass;
+		regionEle.id = locName;
+		regionEle.onclick = clickFunc;
+		regionEle.innerHTML = templateHtml;
+		containerNode.appendChild(regionEle);
+	}
+
+
+	numberFormatter( value, decimals=4 ) {
+		var suffix = "";
+		var fractStr = "";
+
+		if ( value > 1000000000 ) {
+			value = parseFloat(value) / 1000000000;
+			suffix = "B"
+		} else if ( value > 1000000 ) {
+			value = parseFloat(value) / 1000000;
+			suffix = "M"
+		} else if ( value > 1000 ) {
+			value = parseFloat(value) / 1000;
+			suffix = "K"
+		}
+
+		value = value + 5 / Math.pow( 10, decimals+1 );		// round
+
+		var whole = parseInt(value);
+
+		if (decimals > 0) {
+			fractStr = ".";
+			var fraction = value - whole;
+			for(var i = 0; i < decimals; i++) {
+				fraction *= 10.0;
+				var fractDigit = parseInt(fraction);
+				fractStr += fractDigit.toString();
+				fraction -= fractDigit;
+			}
+		}
+
+		return whole + fractStr + suffix;
 	}
 
 
@@ -493,19 +554,20 @@ class App {
 			this.setLocationState("Global", true, false );
 		}
 
-		this.changeCaseType("confirmed", false );
-
 		this.setupSectionPanel( "countryNames");
 		this.setupSectionPanel( "stateNames");
 
 		var dropZone = document.getElementById('dropZone');
 		dropZone.style.visibility = "hidden";
 
-		this.initSlider( "startDay", this.getMaxStartDay(), this.startDayChanged.bind(this) );
-		this.initSlider( "smooth", this.getMaxSmooth(), this.smoothChanged.bind(this) );
+		this.initSlider( "startDay", 0, this.getMaxStartDay(), this.startDayChanged.bind(this) );
+		this.initSlider( "smooth", 1, this.getMaxSmooth(), this.smoothChanged.bind(this) );
 
 		this.setStartDay( this.defaultInteger("day", 0, this.getMaxStartDay(), 0), false);
-		this.setSmooth( this.defaultInteger("smooth", 0, this.getMaxSmooth(), this.DefaultSmooth), false);
+		this.setSmooth( this.defaultInteger("smooth", 1, this.getMaxSmooth(), this.DefaultSmooth), false);
+
+		this.sortBy("Country", "Count");
+		this.sortBy("State", "Count");
 
 		this.drawChart();
 	}
@@ -525,13 +587,13 @@ class App {
 
 
 
-	initSlider( name, max, changedFunc ) {
+	initSlider( name, min, max, changedFunc ) {
 		var slider = document.getElementById(name);
 		var output = document.getElementById(name + "Value");
 		output.innerHTML = slider.value;
 
+		slider.min = min;
 		slider.max = max;
-		slider.min = 0;
 
 		slider.oninput = function() {
 		  output.innerHTML = this.value;
@@ -556,7 +618,7 @@ class App {
 	}
 
 	getMaxSmooth() {
-		return 15;
+		return 10;
 	}
 
 	startDayChanged( newValue ) {
@@ -580,7 +642,7 @@ class App {
 
 	initializeButtons() {
 		this.setStartDay( this.defaultInteger("day", 0, this.getMaxStartDay(), 0), false);
-		this.setSmooth( this.defaultInteger("smooth", 0, this.getMaxSmooth(), 0), false);
+		this.setSmooth( this.defaultInteger("smooth", 1, this.getMaxSmooth(), 1), false);
 
 		this.setLogarithmic( this.defaultBool("log", false), false);
 		this.setAlignDayZero(this.defaultBool("align0", false), false);
