@@ -698,6 +698,15 @@ class DataSetDataWorld {
 	readCountSeries( byteStream ) {
 		var counts = [];
 		var max = byteStream.readVarInt();
+
+		var leadingZeros = byteStream.readVarInt();
+
+		max -= leadingZeros;
+
+		while(leadingZeros--) {
+			counts.push( 0 );
+		}
+
 		for( var i = 0; i < max; i++ ) {
 			counts.push( byteStream.readVarInt() );
 		}

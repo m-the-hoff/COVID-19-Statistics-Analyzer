@@ -461,21 +461,43 @@ def exportCaseData(fileName):
 
 
 def exportDates(f, caseDateCounts):
+	countLeadingZeros = True
+	leadingZeroCount = 0
+
 	numCounts = len(gAllDates)		# we assume there are no gaps in provided dates
 	writeVarInt(f, numCounts )
-	prevCount = 0
 
-	for date in gSortedDates:
-		if date in caseDateCounts and caseDateCounts[date].isnumeric():
-			curCount = int(caseDateCounts[date])
-			writeVarInt(f, curCount)
-		else:
-			writeVarInt(f, 0 )
+	if numCounts:
+		for date in gSortedDates:
+			if date in caseDateCounts and caseDateCounts[date].isnumeric():
+				curCount = int(caseDateCounts[date])
+				if curCount or not countLeadingZeros:
+					if countLeadingZeros:
+						writeVarInt(f, leadingZeroCount)
+						countLeadingZeros = False
+					writeVarInt(f, curCount )
+				else:
+					leadingZeroCount += 1
+			else:
+				if countLeadingZeros:
+					leadingZeroCount += 1
+				else:
+					writeVarInt(f, 0 )
+
+		# if all data are zeroes we still need to write out zero count
+		if countLeadingZeros:
+			writeVarInt(f, leadingZeroCount)
 
 
 def readCaseCounts(f):
 	counts = []
 	numCounts = readVarInt(f)
+	leadingZeros = readVarInt(f)
+	for n in range(0,leadingZeros):
+		counts.append( 0 )
+
+	numCounts -= leadingZeros
+
 	for n in range(0,numCounts):
 		counts.append( readVarInt(f) )
 	return counts
@@ -522,7 +544,6 @@ def processAllData():
 		if path != '' and path[len(path)-1] != '/':
 			path = path + '/'
 
-		dataWorldQueryURL	= sys.argv[2]
 		dataWorldCases 		= path + "COVID-19-Cases.csv"
 		regionInfoOut 		= path + "regioninfo.csv"
 		caseDataOut			= path + "caseinfo.dat"
@@ -532,6 +553,7 @@ def processAllData():
 		if len(sys.argv) == 2:
 			processCasesCSVFile(dataWorldCases)
 		else:
+			dataWorldQueryURL	= sys.argv[2]
 			processDataWorldQuery(dataWorldQueryURL, dataWorldCases)
 
 		exportRegionCSV(regionInfoOut)
