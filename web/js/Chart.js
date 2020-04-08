@@ -194,7 +194,11 @@ class Chart {
 			caseCounts = this.calcMovingAverageTrailing( caseCounts, smoothSize );
 		}
 
-		var doublingData = 	this.calculateDoublingData( caseType, region );
+		var doublingData = {};
+
+		if ( delta == "cumulative") {
+			var doublingData = 	this.calculateDoublingData( caseType, region );
+		}
 
 		var toolTipFormat;
 
@@ -294,8 +298,8 @@ class Chart {
 
 				toolTip += ". " + multiplierTxt + " in " + 	App.numberFormatter( dbl.tDouble, 1 ) + " days";
 
-				datum.markerType = "triangle";
-				datum.markerSize = 10;
+				datum.markerType = "square";
+				datum.markerSize = 8;
 				datum.toolTipContent = toolTip;
 			}
 
