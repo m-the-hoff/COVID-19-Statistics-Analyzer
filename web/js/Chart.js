@@ -103,6 +103,66 @@ class Chart {
 	}
 
 
+	calculateDoublingData( caseType, region ) {
+		var doublings = {};
+		var caseCounts = region.getCaseCountsByCaseType( caseType );
+
+
+		var y = caseCounts[caseCounts.length - 1];
+
+		var nextIntegralX = caseCounts.length;
+		var nextActualX = caseCounts.length;
+
+		var halfCount = y / 2.0;
+
+		doublings[caseCounts.length] = { "x": caseCounts.length, "y": y, "multiplier": 2 };
+		for(var i = caseCounts.length - 2; i >= 0; i-- ) {
+			var multiplier = 2;
+			// if we've doubled more than once in a single day,
+			// we need to keep halving on same day to avoid a divide by zero
+			while ( caseCounts[i] && halfCount >= caseCounts[i] ) {
+				var actualX = i + 1 + (halfCount - caseCounts[i]) / (caseCounts[i+1] - caseCounts[i]);
+				var closestX = Math.round(actualX);
+
+				doublings[closestX] = { "x": actualX, "y": halfCount, "multiplier": 2, "tDouble": 0 };
+				doublings[nextIntegralX]["tDouble"] = nextActualX - actualX;
+				doublings[nextIntegralX]["multiplier"] = multiplier;
+
+				multiplier *= 2;
+				nextIntegralX = closestX;
+				nextActualX 	= actualX
+				halfCount /= 2.0;
+			}
+		}
+		return doublings;
+	}
+
+	// Note: not using this because there is no easy way to integrate
+	// these "in between" values onto the existing lines of a region.
+	addDoublingDataPoints( caseType, region, minX, doublingData, dataPts ) {
+		var labelTxt;
+
+		for( var i = 0; i < doublingData.length; i++ ) {
+			if ( i < doublingData.length - 1 ) {
+				var deltaX = doublingData[i].x - doublingData[i+1].x;
+				labelTxt = "Doubled in " + 	App.numberFormatter( deltaX, 1 ) + " days";
+			}
+			else {
+				labelTxt = "";
+			}
+
+			if ( doublingData[i].x >= minX ) {
+				var datum = {
+				  "markerType": "triangle",
+			    "markerSize": 8,
+					"toolTipContent": labelTxt,
+					"x": doublingData[i].x,
+					"y": doublingData[i].y
+				};
+				dataPts.push(datum);
+			}
+		}
+	}
 
 
 	buildChartMetadata(caseType, region, earliestFirstDayIdx, chartParameters ) {
@@ -117,6 +177,7 @@ class Chart {
 		var firstDateIndex = 0;
 		var labelName = region.getName();
 		var x = 1;
+		var deltaTitle;
 
 		if (alignDayZero) {
 			firstDateIndex = region.getFirstNonZeroCaseIndex();
@@ -133,6 +194,28 @@ class Chart {
 			caseCounts = this.calcMovingAverageTrailing( caseCounts, smoothSize );
 		}
 
+		var doublingData = 	this.calculateDoublingData( caseType, region );
+
+		var toolTipFormat;
+
+		switch( delta ) {
+			case "cumulative":				deltaTitle = "Total";					break;
+			case "deltaCount":				deltaTitle = "\u0394";				break;
+			case "deltaDeltaCount":		deltaTitle = "\u0394\u0394";	break;
+			case "deltaPercent":			deltaTitle = "\u0394";				break;
+			default:									deltaTitle = "Total ";				break;
+		}
+
+		switch (countRatio) {
+				case "per1MPop":	toolTipFormat = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}/1M Pop"; break;
+				case "perBed": 		toolTipFormat = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}/Bed"; 		break;
+				default: 					toolTipFormat = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}"; 				break;
+			}
+
+		if ( smoothSize > 1 ) {
+			toolTipFormat += " (" + smoothSize.toString() + " pt moving avg)";
+		}
+
 		for (var c = firstDateIndex; c < caseCounts.length; c++ ) {
 			var prevCount = 0;
 			var prevDelta = 0;
@@ -142,7 +225,6 @@ class Chart {
 			var formatString = null;
 			var deltaTminus1 = 0;
 			var deltaTminus2 = 0;
-			var deltaTitle;
 
 			if ( c >= 1 ) {
 				deltaTminus1 = caseCounts[c] - caseCounts[c-1];
@@ -152,21 +234,10 @@ class Chart {
 			}
 
 			switch( delta ) {
-				case "cumulative":
-					count = caseCounts[c];
-					deltaTitle = "Total";
-					break;
-
-				case "deltaCount":
-					count = deltaTminus1;
-					deltaTitle = "\u0394";
-					break;
-
-				case "deltaDeltaCount":
-					count = deltaTminus1 - deltaTminus2;
-					deltaTitle = "\u0394\u0394";
-					break;
-
+				default:									count = 0.0;													break;
+				case "cumulative":				count = caseCounts[c];								break;
+				case "deltaCount":				count = deltaTminus1;									break;
+				case "deltaDeltaCount":		count = deltaTminus1 - deltaTminus2;	break;
 				case "deltaPercent":
 					var prevCount = caseCounts[c] - deltaTminus1;
 					if (prevCount) {
@@ -175,19 +246,11 @@ class Chart {
 						count = 0.0;
 					}
 					formatString = "0.##%";
-					deltaTitle = "\u0394";
-					break;
-
-				default:
-					count = 0.0;
-					deltaTitle = "Total ";
 					break;
 			}
 
-
 			if (countRatio == "per1MPop") {
 				count = 1000000 * parseFloat(count) / parseFloat(region.getPopulation() );
-
 			} else if (countRatio == "perBed") {
 				count = parseFloat(count) / parseFloat(region.getBeds() );
 				formatString = "0.##%";
@@ -216,6 +279,25 @@ class Chart {
 				"y": count
 			};
 
+			if ( x in doublingData && doublingData[x].tDouble ) {
+				var dbl = doublingData[x];
+				var multiplierTxt = "Doubled";
+				var toolTip = toolTipFormat;
+
+				if (dbl.multiplier > 2) {
+					multiplierTxt = dbl.multiplier.toString() + "X";
+				}
+
+				toolTip = toolTip.replace("{name}", labelName);
+				toolTip = toolTip.replace("{label}", labelTxt);
+				toolTip = toolTip.replace("{y}", App.numberFormatter( count, 2 ) );
+
+				toolTip += ". " + multiplierTxt + " in " + 	App.numberFormatter( dbl.tDouble, 1 ) + " days";
+
+				datum.markerType = "triangle";
+				datum.markerSize = 10;
+				datum.toolTipContent = toolTip;
+			}
 
 			if (chartParameters.ShowCountryLabel && c == caseCounts.length - 1) {
 				datum.indexLabel = region.getShortestName();
@@ -240,22 +322,11 @@ class Chart {
 
 		}
 
-		var toolTip;
-
-		switch (countRatio) {
-				case "per1MPop":	toolTip = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}/1M Pop"; break;
-				case "perBed": 		toolTip = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}/Bed"; 		break;
-				default: 					toolTip = "{name}: " + deltaTitle + " " + caseType + " on day {label}: {y}"; 				break;
-			}
-
-		if ( smoothSize > 1 ) {
-			toolTip += " (" + smoothSize.toString() + " pt moving avg)";
-		}
 
 		var data = {
 			indexLabelFontSize: 9,
 			name: labelName,
-			toolTipContent: toolTip,
+			toolTipContent: toolTipFormat,
 			showInLegend: true,
 			type: chartType == "line" ? "spline" : chartType,
 			dataPoints: dataPts,

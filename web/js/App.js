@@ -450,12 +450,12 @@ class App {
 
 		templateHtml = templateHtml.replace("{label}", 					label );
 		templateHtml = templateHtml.replace("{name}", 					region.getName() );
-		templateHtml = templateHtml.replace("{population}", 		this.numberFormatter( population, 		2) );
-		templateHtml = templateHtml.replace("{beds}", 					this.numberFormatter( bedsPer1K, 			1) );
-		templateHtml = templateHtml.replace("{confirmed}", 			this.numberFormatter( confirmed, 			2) );
-		templateHtml = templateHtml.replace("{confirmedPerM}",	this.numberFormatter( confirmedPer1M,	2) );
-		templateHtml = templateHtml.replace("{deaths}", 				this.numberFormatter( deaths, 				2) );
-		templateHtml = templateHtml.replace("{deathsPerM}", 		this.numberFormatter( deathsPer1M,		2) );
+		templateHtml = templateHtml.replace("{population}", 		App.numberFormatter( population, 		2) );
+		templateHtml = templateHtml.replace("{beds}", 					App.numberFormatter( bedsPer1K, 			1) );
+		templateHtml = templateHtml.replace("{confirmed}", 			App.numberFormatter( confirmed, 			2) );
+		templateHtml = templateHtml.replace("{confirmedPerM}",	App.numberFormatter( confirmedPer1M,	2) );
+		templateHtml = templateHtml.replace("{deaths}", 				App.numberFormatter( deaths, 				2) );
+		templateHtml = templateHtml.replace("{deathsPerM}", 		App.numberFormatter( deathsPer1M,		2) );
 
 		var clickFunc = function() {
 			if ( !region.isShowing() && self.FirstRegion ) {
@@ -474,7 +474,7 @@ class App {
 	}
 
 
-	numberFormatter( value, decimals=4 ) {
+	static numberFormatter( value, decimals=4 ) {
 		var suffix = "";
 		var fractStr = "";
 
@@ -489,11 +489,12 @@ class App {
 			suffix = "K"
 		}
 
-		value = value + 5 / Math.pow( 10, decimals+1 );		// round
-
 		var whole = parseInt(value);
 
-		if (decimals > 0) {
+		if (decimals > 0 && value != parseInt(value)) {
+			value = value + 5 / Math.pow( 10, decimals+1 );		// round
+			whole = parseInt(value);
+
 			fractStr = ".";
 			var fraction = value - whole;
 			for(var i = 0; i < decimals; i++) {
