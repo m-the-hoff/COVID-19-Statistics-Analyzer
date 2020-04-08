@@ -89,6 +89,9 @@ class Chart {
 				labelAngle: 				90,
 				interval: 					labelInterval
 			},
+			toolTip: {
+			  fontSize: 12
+			},
 			data: allChartData
 		};
 
@@ -299,7 +302,7 @@ class Chart {
 				toolTip += ". " + multiplierTxt + " in " + 	App.numberFormatter( dbl.tDouble, 1 ) + " days";
 
 				datum.markerType = "square";
-				datum.markerSize = 8;
+				datum.markerSize = 6;
 				datum.toolTipContent = toolTip;
 			}
 
@@ -328,6 +331,7 @@ class Chart {
 
 
 		var data = {
+			lineThickness: 1,
 			indexLabelFontSize: 9,
 			name: labelName,
 			toolTipContent: toolTipFormat,
